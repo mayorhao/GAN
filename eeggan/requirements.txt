@@ -1,0 +1,6 @@
+Braindecode==0.4.85
+joblib==0.13.2
+scipy==1.3.0
+matplotlib==3.1.1
+torch==1.0.1
+numpy==1.16.4
