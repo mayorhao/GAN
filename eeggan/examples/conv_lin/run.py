@@ -3,7 +3,7 @@
 import os
 import joblib
 import sys
-sys.path.append("/home/hartmank/git/GAN_clean")
+sys.path.append("/home/fanjiahao/GAN/GAN")
 
 
 from braindecode.datautil.iterators import get_balanced_batches
@@ -15,14 +15,15 @@ from torch.autograd import Variable
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-
+import scipy.io as scio
 plt.switch_backend('agg')
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 torch.backends.cudnn.enabled=True
 torch.backends.cudnn.benchmark=True
 
 n_critic = 5
-n_batch = 64
+#fixme 64-->8
+n_batch = 8
 input_length = 768
 jobid = 0
 
@@ -56,22 +57,24 @@ torch.cuda.manual_seed_all(task_ind)
 random.seed(task_ind)
 rng = np.random.RandomState(task_ind)
 
-data = os.path.join('/data/schirrmr/hartmank/data/GAN/cnt',subj_names[subj_ind]+'_FCC4h.cnt')
-EEG_data = joblib.load(data)
-train_set = EEG_data['train_set']
-test_set = EEG_data['test_set']
-train = np.concatenate((train_set.X,test_set.X))
-target = np.concatenate((train_set.y,test_set.y))
-
-train = train[:,:,:,None]
+# data = os.path.join('/home/fanjiahao/GAN/extractSleepData/output/stages-c3-128/01-03-0064.mat/stages.mat')
+data_mat=scio.loadmat('/home/fanjiahao/GAN/extractSleepData/output/stages-c3-128/01-03-0064.mat/stages.mat')
+EEG_data=data_mat['N1']
+# train_set = EEG_data['train_set']
+# test_set = EEG_data['test_set']
+# train = np.concatenate((train_set.X,test_set.X))
+# target = np.concatenate((train_set.y,test_set.y))
+train=np.expand_dims(EEG_data,axis=1)
+# train = train[:,:,:,None]
 train = train-train.mean()
 train = train/train.std()
 train = train/np.abs(train).max()
-target_onehot = np.zeros((target.shape[0],2))
-target_onehot[:,target] = 1
+# FIXME leave one-hot
+# target_onehot = np.zeros((target.shape[0],2))
+# target_onehot[:,target] = 1
 
 
-modelpath = '/data/schirrmr/hartmank/data/GAN/models/GAN_debug/%s/'%('PAPERFIN4_'+subj_names[subj_ind]+'_FFC4h_WGAN_adaptlambclamp_CONV_LIN_10l_run%d'%task_ind)
+modelpath = './models/GAN_debug/%s/'%('PAPERFIN4_'+subj_names[subj_ind]+'_FFC4h_WGAN_adaptlambclamp_CONV_LIN_10l_run%d'%task_ind)
 modelname = 'Progressive%s'
 if not os.path.exists(modelpath):
     os.makedirs(modelpath)
@@ -102,7 +105,7 @@ discriminator.train()
 losses_d = []
 losses_g = []
 i_epoch = 0
-z_vars_im = rng.normal(0,1,size=(1000,n_z)).astype(np.float32)
+z_vars_im = rng.normal(0,1,size=(1000,n_z)).astype(np.float32) #see 1000*200
 
 for i_block in range(i_block_tmp,n_blocks):
     c = 0
@@ -124,7 +127,7 @@ for i_block in range(i_block_tmp,n_blocks):
             for i_critic in range(n_critic):
                 train_batches = train_tmp[batches[it*n_critic+i_critic]]
                 batch_real = Variable(train_batches,requires_grad=True).cuda()
-
+#see indicate the batchsize
                 z_vars = rng.normal(0,1,size=(len(batches[it*n_critic+i_critic]),n_z)).astype(np.float32)
                 z_vars = Variable(torch.from_numpy(z_vars),volatile=True).cuda()
                 batch_fake = Variable(generator(z_vars).data,requires_grad=True).cuda()

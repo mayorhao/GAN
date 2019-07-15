@@ -32,7 +32,7 @@ class ProgressiveDiscriminator(nn.Module):
 		self.blocks = nn.ModuleList(blocks)
 		self.cur_block = len(self.blocks)-1
 		self.alpha = 1.
-
+# see ?what's this?
 	def forward(self,input):
 		fade = False
 		alpha = self.alpha
@@ -43,6 +43,7 @@ class ProgressiveDiscriminator(nn.Module):
 				fade = True
 
 			if fade and i==self.cur_block+1:
+				# see fade input
 				input = alpha*input+(1.-alpha)*tmp
 
 			input = self.blocks[i](input,
@@ -149,6 +150,7 @@ class ProgressiveGeneratorBlock(nn.Module):
 	fade_sequence : nn.Sequence
 		Sequence of modules that is used for fading stage into output
 	"""
+	#SEE add 3 module in this block
 	def __init__(self,intermediate_sequence,out_sequence,fade_sequence):
 		super(ProgressiveGeneratorBlock,self).__init__()
 		self.intermediate_sequence = intermediate_sequence

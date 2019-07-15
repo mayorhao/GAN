@@ -3,7 +3,7 @@
 import os
 import joblib
 import sys
-sys.path.append("/home/hartmank/git/GAN_clean")
+sys.path.append("/home/fanjiahao/GAN")
 
 
 from braindecode.datautil.iterators import get_balanced_batches
