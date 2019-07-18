@@ -253,7 +253,9 @@ class WGAN_I_Discriminator(GAN_Discriminator):
 			tmp_center = (loss_real+loss_fake)
 			tmp_center = self.eps_center*tmp_center**2
 			tmp_center.backward()
-			loss_center = tmp_center.data[0]
+			#fixme error occurs when use this code,use tensor.item() instead
+			# loss_center = tmp_center.data[0]
+			loss_center = tmp_center.item()
 
 		#loss_consistency_term
 		#if self.lambd_consistency_term>0:
@@ -269,10 +271,13 @@ class WGAN_I_Discriminator(GAN_Discriminator):
 
 		# Update parameters
 		self.update_parameters()
-
-		loss_real = -loss_real.data[0]
-		loss_fake = loss_fake.data[0]
-		loss_penalty = loss_penalty.data[0]
+#fixme use tensor.item() instead
+		# loss_real = -loss_real.data[0]
+		# loss_fake = loss_fake.data[0]
+		# loss_penalty = loss_penalty.data[0]
+		loss_real = -loss_real.item()
+		loss_fake = loss_fake.item()
+		loss_penalty = loss_penalty.item()
 		return loss_real,loss_fake,loss_penalty,loss_drift,loss_center # return loss
 
 
@@ -351,7 +356,7 @@ class WGAN_I_Generator(GAN_Generator):
 
 		Parameters
 		----------
-		batch_noise : autograd.Variable
+		batch_noise : auttrain_batchograd.Variable
 			Batch of latent noise
 		discriminator : nn.Module
 			Discriminator to evaluate realness of generated data
@@ -376,6 +381,6 @@ class WGAN_I_Generator(GAN_Generator):
 
 		# Update parameters
 		self.update_parameters()
-
-		loss = loss.data[0]
+#fixme tensor.data problem
+		loss = loss.item()
 		return loss # return loss

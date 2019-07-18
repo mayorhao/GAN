@@ -110,6 +110,7 @@ class ProgressiveGenerator(nn.Module):
 		if fade:
 			tmp = self.blocks[i-1].fade_sequence(tmp)
 			input = alpha*input+(1.-alpha)*tmp
+
 		return input
 
 class ProgressiveDiscriminatorBlock(nn.Module):

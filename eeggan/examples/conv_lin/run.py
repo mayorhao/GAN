@@ -3,9 +3,9 @@
 import os
 import joblib
 import sys
-sys.path.append("/home/fanjiahao/GAN/GAN")
+sys.path.append("/home/STOREAGE/fanjiahao/GAN")
 
-
+from torchsummary import summary
 from braindecode.datautil.iterators import get_balanced_batches
 from eeggan.examples.conv_lin.model import Generator,Discriminator
 from eeggan.util import weight_filler
@@ -34,8 +34,11 @@ rampup = 2000.
 block_epochs = [2000,4000,4000,4000,4000,4000]
 
 subj_ind = int(os.getenv('SLURM_ARRAY_TASK_ID','0'))
+# FIXME original task_ind is 0
 task_ind = 0#subj_ind
-#subj_ind = 9
+# FIXME allocate specific GPu
+torch.cuda.set_device(1)
+# #subj_ind = 9
 subj_names = ['BhNoMoSc1',
              'FaMaMoSc1',
              'FrThMoSc1',
@@ -58,13 +61,15 @@ random.seed(task_ind)
 rng = np.random.RandomState(task_ind)
 
 # data = os.path.join('/home/fanjiahao/GAN/extractSleepData/output/stages-c3-128/01-03-0064.mat/stages.mat')
-data_mat=scio.loadmat('/home/fanjiahao/GAN/extractSleepData/output/stages-c3-128/01-03-0064.mat/stages.mat')
+data_path='/home/STOREAGE/fanjiahao/GAN/data/EEG-EOG-ECG-128-c3'
+data_mat=scio.loadmat('/home/STOREAGE/fanjiahao/GAN/eeggan/stages.mat')
 EEG_data=data_mat['N1']
 # train_set = EEG_data['train_set']
 # test_set = EEG_data['test_set']
 # train = np.concatenate((train_set.X,test_set.X))
 # target = np.concatenate((train_set.y,test_set.y))
 train=np.expand_dims(EEG_data,axis=1)
+train=np.reshape(train,(train.shape[0],train.shape[1],train.shape[2],1))
 # train = train[:,:,:,None]
 train = train-train.mean()
 train = train/train.std()
@@ -88,7 +93,7 @@ discriminator.train_init(alpha=lr,betas=(0.,0.99),eps_center=0.001,
                         one_sided_penalty=True,distance_weighting=True)
 generator = generator.apply(weight_filler)
 discriminator = discriminator.apply(weight_filler)
-
+#FIXME i_block_tmp and i_epoch_tmp are original 0
 i_block_tmp = 0
 i_epoch_tmp = 0
 generator.model.cur_block = i_block_tmp
@@ -99,6 +104,7 @@ discriminator.model.alpha = fade_alpha
 
 generator = generator.cuda()
 discriminator = discriminator.cuda()
+# summary(generator,(1,1,200,1))
 generator.train()
 discriminator.train()
 
@@ -109,7 +115,7 @@ z_vars_im = rng.normal(0,1,size=(1000,n_z)).astype(np.float32) #see 1000*200
 
 for i_block in range(i_block_tmp,n_blocks):
     c = 0
-
+    # train_tmp down_sample to fit the current cric block
     train_tmp = discriminator.model.downsample_to_block(Variable(torch.from_numpy(train).cuda(),volatile=True),discriminator.model.cur_block).data.cpu()
 
     for i_epoch in range(i_epoch_tmp,block_epochs[i_block]):
@@ -131,7 +137,7 @@ for i_block in range(i_block_tmp,n_blocks):
                 z_vars = rng.normal(0,1,size=(len(batches[it*n_critic+i_critic]),n_z)).astype(np.float32)
                 z_vars = Variable(torch.from_numpy(z_vars),volatile=True).cuda()
                 batch_fake = Variable(generator(z_vars).data,requires_grad=True).cuda()
-
+            #see this line error occurs
                 loss_d = discriminator.train_batch(batch_real,batch_fake)
                 assert np.all(np.isfinite(loss_d))
             z_vars = rng.normal(0,1,size=(n_batch,n_z)).astype(np.float32)
