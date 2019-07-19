@@ -16,6 +16,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 import scipy.io as scio
+import glob
+
 plt.switch_backend('agg')
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 torch.backends.cudnn.enabled=True
@@ -23,10 +25,9 @@ torch.backends.cudnn.benchmark=True
 
 n_critic = 5
 #fixme 64-->8
-n_batch = 8
+n_batch = 64
 input_length = 768
 jobid = 0
-
 n_z = 200
 lr = 0.001
 n_blocks = 6
@@ -59,16 +60,28 @@ torch.manual_seed(task_ind)
 torch.cuda.manual_seed_all(task_ind)
 random.seed(task_ind)
 rng = np.random.RandomState(task_ind)
-
 # data = os.path.join('/home/fanjiahao/GAN/extractSleepData/output/stages-c3-128/01-03-0064.mat/stages.mat')
-data_path='/home/STOREAGE/fanjiahao/GAN/data/EEG-EOG-ECG-128-c3'
-data_mat=scio.loadmat('/home/STOREAGE/fanjiahao/GAN/eeggan/stages.mat')
-EEG_data=data_mat['N1']
+
+data_path='/home/STOREAGE/fanjiahao/GAN/data/stages-c3-128/*.mat'
+data_list=glob.glob(os.path.join(data_path))
+data_list.sort()
+for i in range(len(data_list)):
+    data_tmp = scio.loadmat(os.path.join(data_list[i],'stages.mat'))
+    eeg_data_tmp=data_tmp['N1']
+    try:
+        data_set=np.vstack((data_set, eeg_data_tmp))
+    except NameError:
+        data_set=eeg_data_tmp[:,:]
+
+
+
+# data_mat=scio.loadmat('/home/STOREAGE/fanjiahao/GAN/eeggan/stages.mat')
+# EEG_data=data_mat['N1']
 # train_set = EEG_data['train_set']
 # test_set = EEG_data['test_set']
 # train = np.concatenate((train_set.X,test_set.X))
 # target = np.concatenate((train_set.y,test_set.y))
-train=np.expand_dims(EEG_data,axis=1)
+train=np.expand_dims(data_set,axis=1)
 train=np.reshape(train,(train.shape[0],train.shape[1],train.shape[2],1))
 # train = train[:,:,:,None]
 train = train-train.mean()
@@ -79,7 +92,7 @@ train = train/np.abs(train).max()
 # target_onehot[:,target] = 1
 
 
-modelpath = './models/GAN_debug/%s/'%('PAPERFIN4_'+subj_names[subj_ind]+'_FFC4h_WGAN_adaptlambclamp_CONV_LIN_10l_run%d'%task_ind)
+modelpath = './models/GAN_debug/conv_linear_'+str(task_ind)
 modelname = 'Progressive%s'
 if not os.path.exists(modelpath):
     os.makedirs(modelpath)
@@ -104,12 +117,22 @@ discriminator.model.alpha = fade_alpha
 
 generator = generator.cuda()
 discriminator = discriminator.cuda()
+losses_d = []
+losses_g = []
+#fixme load models start
+generator.load_model(os.path.join(modelpath,modelname%jobid+'.gen'))
+discriminator.load_model(os.path.join(modelpath,modelname%jobid+'.disc'))
+i_block_tmp=3
+i_epoch_tmp=400
+i_epoch,loss_d,loss_g=joblib.load(os.path.join(modelpath,modelname%jobid+'_.data'))
+#fixme load models end
+
 # summary(generator,(1,1,200,1))
+
 generator.train()
 discriminator.train()
 
-losses_d = []
-losses_g = []
+
 i_epoch = 0
 z_vars_im = rng.normal(0,1,size=(1000,n_z)).astype(np.float32) #see 1000*200
 
@@ -166,6 +189,7 @@ for i_block in range(i_block_tmp,n_blocks):
             z_vars = Variable(torch.from_numpy(z_vars_im),volatile=True).cuda()
             batch_fake = generator(z_vars)
             fake_fft = np.fft.rfft(batch_fake.data.cpu().numpy(),axis=2)
+            # here are the average of train batches
             fake_amps = np.abs(fake_fft).mean(axis=3).mean(axis=0).squeeze()
 
             plt.figure()
