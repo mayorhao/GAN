@@ -3,9 +3,10 @@
 import os
 import joblib
 import sys
-sys.path.append("/home/STOREAGE/fanjiahao/GAN")
-
-from torchsummary import summary
+# for estar
+# sys.path.append("/home/STOREAGE/fanjiahao/GAN")
+# for dell
+sys.path.append("/home/fanjiahao/GAN/GAN")
 from braindecode.datautil.iterators import get_balanced_batches
 from eeggan.examples.conv_lin.model import Generator,Discriminator
 from eeggan.util import weight_filler
@@ -33,12 +34,12 @@ lr = 0.001
 n_blocks = 6
 rampup = 2000.
 block_epochs = [2000,4000,4000,4000,4000,4000]
-
+n_stage='N2'
 subj_ind = int(os.getenv('SLURM_ARRAY_TASK_ID','0'))
 # FIXME original task_ind is 0
-task_ind = 0#subj_ind
+task_ind = 1#subj_ind
 # FIXME allocate specific GPu
-torch.cuda.set_device(1)
+torch.cuda.set_device(3)
 # #subj_ind = 9
 subj_names = ['BhNoMoSc1',
              'FaMaMoSc1',
@@ -61,13 +62,15 @@ torch.cuda.manual_seed_all(task_ind)
 random.seed(task_ind)
 rng = np.random.RandomState(task_ind)
 # data = os.path.join('/home/fanjiahao/GAN/extractSleepData/output/stages-c3-128/01-03-0064.mat/stages.mat')
-
-data_path='/home/STOREAGE/fanjiahao/GAN/data/stages-c3-128/*.mat'
+#for estar
+# data_path='/home/STOREAGE/fanjiahao/GAN/data/stages-c3-128/*.mat'
+#for dell
+data_path='/home/fanjiahao/GAN/extractSleepData/output/stages-c3-128/*.mat'
 data_list=glob.glob(os.path.join(data_path))
 data_list.sort()
 for i in range(len(data_list)):
     data_tmp = scio.loadmat(os.path.join(data_list[i],'stages.mat'))
-    eeg_data_tmp=data_tmp['N1']
+    eeg_data_tmp=data_tmp[n_stage]
     try:
         data_set=np.vstack((data_set, eeg_data_tmp))
     except NameError:
@@ -92,7 +95,7 @@ train = train/np.abs(train).max()
 # target_onehot[:,target] = 1
 
 
-modelpath = './models/GAN_debug/conv_linear_'+str(task_ind)
+modelpath = './models/GAN_debug/conv_linear_'+str(task_ind)+'_'+n_stage
 modelname = 'Progressive%s'
 if not os.path.exists(modelpath):
     os.makedirs(modelpath)
@@ -120,12 +123,12 @@ discriminator = discriminator.cuda()
 losses_d = []
 losses_g = []
 #fixme load models start
-generator.load_model(os.path.join(modelpath,modelname%jobid+'.gen'))
-discriminator.load_model(os.path.join(modelpath,modelname%jobid+'.disc'))
-i_block_tmp=3
-i_epoch_tmp=400
-i_epoch,loss_d,loss_g=joblib.load(os.path.join(modelpath,modelname%jobid+'_.data'))
-#fixme load models end
+# generator.load_model(os.path.join(modelpath,modelname%jobid+'.gen'))
+# discriminator.load_model(os.path.join(modelpath,modelname%jobid+'.disc'))
+# # i_block_tmp=3
+# i_epoch_tmp=400
+# i_epoch,loss_d,loss_g=joblib.load(os.path.join(modelpath,modelname%jobid+'_.data'))
+# #fixme load models end
 
 # summary(generator,(1,1,200,1))
 

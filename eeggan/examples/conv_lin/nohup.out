@@ -1,0 +1,124 @@
+run.py:145: UserWarning: volatile was removed and now has no effect. Use `with torch.no_grad():` instead.
+  train_tmp = discriminator.model.downsample_to_block(Variable(torch.from_numpy(train).cuda(),volatile=True),discriminator.model.cur_block).data.cpu()
+run.py:164: UserWarning: volatile was removed and now has no effect. Use `with torch.no_grad():` instead.
+  z_vars = Variable(torch.from_numpy(z_vars),volatile=True).cuda()
+/home/fanjiahao/.conda/envs/eeggan/lib/python3.6/site-packages/torch/nn/modules/upsampling.py:129: UserWarning: nn.Upsample is deprecated. Use nn.functional.interpolate instead.
+  warnings.warn("nn.{} is deprecated. Use nn.functional.interpolate instead.".format(self.name))
+/home/fanjiahao/.conda/envs/eeggan/lib/python3.6/site-packages/torch/nn/functional.py:2423: UserWarning: Default upsampling behavior when mode=linear is changed to align_corners=False since 0.4.0. Please specify align_corners=True if the old behavior is desired. See the documentation of nn.Upsample for details.
+  "See the documentation of nn.Upsample for details.".format(mode))
+Epoch: 400   Loss_F: -0.075   Loss_R: 0.030   Penalty: 0.0081   Loss_G: -0.088
+run.py:192: UserWarning: volatile was removed and now has no effect. Use `with torch.no_grad():` instead.
+  z_vars = Variable(torch.from_numpy(z_vars_im),volatile=True).cuda()
+Epoch: 500   Loss_F: 0.007   Loss_R: -0.054   Penalty: 0.0094   Loss_G: -0.149
+Epoch: 600   Loss_F: 0.012   Loss_R: -0.048   Penalty: 0.0016   Loss_G: -0.062
+Epoch: 700   Loss_F: -0.031   Loss_R: -0.056   Penalty: 0.0146   Loss_G: -0.004
+Epoch: 800   Loss_F: -0.030   Loss_R: -0.020   Penalty: 0.0027   Loss_G: -0.126
+Epoch: 900   Loss_F: 0.002   Loss_R: -0.056   Penalty: 0.0008   Loss_G: -0.027
+Epoch: 1000   Loss_F: -0.059   Loss_R: -0.015   Penalty: 0.0160   Loss_G: -0.009
+Epoch: 1100   Loss_F: -0.018   Loss_R: 0.003   Penalty: 0.0003   Loss_G: -0.115
+Epoch: 1200   Loss_F: -0.019   Loss_R: -0.043   Penalty: 0.0012   Loss_G: -0.030
+Epoch: 1300   Loss_F: -0.005   Loss_R: -0.040   Penalty: 0.0026   Loss_G: -0.048
+Epoch: 1400   Loss_F: -0.055   Loss_R: 0.007   Penalty: 0.0012   Loss_G: 0.003
+Epoch: 1500   Loss_F: 0.021   Loss_R: -0.062   Penalty: 0.0032   Loss_G: -0.046
+Epoch: 1600   Loss_F: 0.048   Loss_R: -0.080   Penalty: 0.0007   Loss_G: -0.064
+Epoch: 1700   Loss_F: -0.017   Loss_R: -0.043   Penalty: 0.0077   Loss_G: -0.033
+Epoch: 1800   Loss_F: -0.111   Loss_R: -0.016   Penalty: 0.0377   Loss_G: 0.005
+Epoch: 1900   Loss_F: -0.043   Loss_R: -0.016   Penalty: 0.0019   Loss_G: 0.018
+Epoch: 2000   Loss_F: -0.060   Loss_R: -0.007   Penalty: 0.0132   Loss_G: -0.018
+Epoch: 2100   Loss_F: -0.010   Loss_R: -0.021   Penalty: 0.0021   Loss_G: -0.060
+Epoch: 2200   Loss_F: 0.020   Loss_R: -0.041   Penalty: 0.0025   Loss_G: -0.103
+Epoch: 2300   Loss_F: 0.008   Loss_R: -0.040   Penalty: 0.0039   Loss_G: -0.089
+Epoch: 2400   Loss_F: -0.100   Loss_R: 0.045   Penalty: 0.0020   Loss_G: 0.040
+Epoch: 2500   Loss_F: -0.027   Loss_R: -0.019   Penalty: 0.0040   Loss_G: -0.029
+Epoch: 2600   Loss_F: -0.067   Loss_R: 0.008   Penalty: 0.0116   Loss_G: -0.020
+Epoch: 2700   Loss_F: -0.037   Loss_R: -0.023   Penalty: 0.0029   Loss_G: 0.011
+Epoch: 2800   Loss_F: 0.005   Loss_R: -0.043   Penalty: 0.0025   Loss_G: -0.053
+Epoch: 2900   Loss_F: -0.068   Loss_R: 0.017   Penalty: 0.0024   Loss_G: 0.016
+Epoch: 3000   Loss_F: 0.013   Loss_R: -0.054   Penalty: 0.0016   Loss_G: -0.064
+Epoch: 3100   Loss_F: -0.021   Loss_R: -0.022   Penalty: 0.0024   Loss_G: -0.024
+Epoch: 3200   Loss_F: -0.052   Loss_R: -0.004   Penalty: 0.0028   Loss_G: -0.012
+Epoch: 3300   Loss_F: -0.047   Loss_R: 0.000   Penalty: 0.0051   Loss_G: -0.054
+Epoch: 3400   Loss_F: -0.038   Loss_R: -0.008   Penalty: 0.0031   Loss_G: -0.019
+Epoch: 3500   Loss_F: -0.011   Loss_R: -0.027   Penalty: 0.0016   Loss_G: -0.019
+Epoch: 3600   Loss_F: -0.041   Loss_R: -0.006   Penalty: 0.0036   Loss_G: -0.017
+Epoch: 3700   Loss_F: -0.045   Loss_R: -0.049   Penalty: 0.0183   Loss_G: -0.046
+Epoch: 3800   Loss_F: -0.044   Loss_R: -0.007   Penalty: 0.0066   Loss_G: -0.033
+Epoch: 3900   Loss_F: 0.005   Loss_R: -0.049   Penalty: 0.0010   Loss_G: -0.040
+/home/fanjiahao/.conda/envs/eeggan/lib/python3.6/site-packages/torch/nn/functional.py:2423: UserWarning: Default upsampling behavior when mode=bilinear is changed to align_corners=False since 0.4.0. Please specify align_corners=True if the old behavior is desired. See the documentation of nn.Upsample for details.
+  "See the documentation of nn.Upsample for details.".format(mode))
+Epoch: 0   Loss_F: 0.083   Loss_R: -0.161   Penalty: 0.0042   Loss_G: -0.193
+Epoch: 100   Loss_F: -0.173   Loss_R: 0.012   Penalty: 0.0121   Loss_G: -0.006
+Epoch: 200   Loss_F: 0.030   Loss_R: -0.130   Penalty: 0.0076   Loss_G: -0.081
+Epoch: 300   Loss_F: -0.043   Loss_R: -0.060   Penalty: 0.0101   Loss_G: -0.116
+Epoch: 400   Loss_F: -0.187   Loss_R: 0.046   Penalty: 0.0181   Loss_G: 0.033
+Epoch: 500   Loss_F: 0.031   Loss_R: -0.194   Penalty: 0.0383   Loss_G: -0.114
+Epoch: 600   Loss_F: -0.074   Loss_R: -0.044   Penalty: 0.0266   Loss_G: -0.059
+Epoch: 700   Loss_F: -0.048   Loss_R: -0.060   Penalty: 0.0166   Loss_G: -0.059
+Epoch: 800   Loss_F: -0.069   Loss_R: -0.034   Penalty: 0.0071   Loss_G: -0.037
+Epoch: 900   Loss_F: -0.007   Loss_R: -0.080   Penalty: 0.0069   Loss_G: -0.052
+Epoch: 1000   Loss_F: -0.035   Loss_R: -0.020   Penalty: 0.0028   Loss_G: -0.007
+Epoch: 1100   Loss_F: -0.082   Loss_R: -0.089   Penalty: 0.0197   Loss_G: -0.068
+Epoch: 1200   Loss_F: -0.010   Loss_R: -0.071   Penalty: 0.0026   Loss_G: -0.037
+Epoch: 1300   Loss_F: -0.017   Loss_R: -0.101   Penalty: 0.0112   Loss_G: -0.042
+Epoch: 1400   Loss_F: -0.050   Loss_R: -0.120   Penalty: 0.0246   Loss_G: -0.103
+Epoch: 1500   Loss_F: -0.036   Loss_R: -0.103   Penalty: 0.0230   Loss_G: -0.061
+Epoch: 1600   Loss_F: 0.023   Loss_R: -0.088   Penalty: 0.0022   Loss_G: -0.042
+Epoch: 1700   Loss_F: -0.120   Loss_R: -0.013   Penalty: 0.0172   Loss_G: -0.016
+Epoch: 1800   Loss_F: -0.083   Loss_R: -0.042   Penalty: 0.0064   Loss_G: -0.011
+Epoch: 1900   Loss_F: -0.092   Loss_R: 0.002   Penalty: 0.0041   Loss_G: 0.041
+Epoch: 2000   Loss_F: -0.033   Loss_R: -0.035   Penalty: 0.0035   Loss_G: -0.050
+Epoch: 2100   Loss_F: 0.005   Loss_R: -0.103   Penalty: 0.0031   Loss_G: -0.027
+Epoch: 2200   Loss_F: -0.069   Loss_R: -0.031   Penalty: 0.0063   Loss_G: -0.022
+Epoch: 2300   Loss_F: -0.025   Loss_R: -0.079   Penalty: 0.0081   Loss_G: -0.030
+Epoch: 2400   Loss_F: 0.020   Loss_R: -0.102   Penalty: 0.0033   Loss_G: -0.153
+Epoch: 2500   Loss_F: -0.117   Loss_R: 0.009   Penalty: 0.0176   Loss_G: -0.044
+Epoch: 2600   Loss_F: -0.062   Loss_R: -0.011   Penalty: 0.0046   Loss_G: -0.017
+Epoch: 2700   Loss_F: 0.004   Loss_R: -0.095   Penalty: 0.0114   Loss_G: -0.113
+Epoch: 2800   Loss_F: 0.010   Loss_R: -0.072   Penalty: 0.0014   Loss_G: -0.078
+Epoch: 2900   Loss_F: -0.117   Loss_R: -0.036   Penalty: 0.0226   Loss_G: -0.015
+Epoch: 3000   Loss_F: -0.062   Loss_R: -0.083   Penalty: 0.0143   Loss_G: -0.090
+Epoch: 3100   Loss_F: -0.201   Loss_R: 0.005   Penalty: 0.0162   Loss_G: 0.006
+Epoch: 3200   Loss_F: -0.186   Loss_R: 0.047   Penalty: 0.0082   Loss_G: 0.013
+Epoch: 3300   Loss_F: 0.023   Loss_R: -0.100   Penalty: 0.0035   Loss_G: -0.108
+Epoch: 3400   Loss_F: -0.113   Loss_R: 0.077   Penalty: 0.0050   Loss_G: -0.066
+Epoch: 3500   Loss_F: 0.010   Loss_R: -0.093   Penalty: 0.0053   Loss_G: -0.111
+Epoch: 3600   Loss_F: -0.043   Loss_R: -0.099   Penalty: 0.0229   Loss_G: -0.060
+Epoch: 3700   Loss_F: 0.040   Loss_R: -0.140   Penalty: 0.0048   Loss_G: -0.149
+Epoch: 3800   Loss_F: -0.152   Loss_R: 0.025   Penalty: 0.0000   Loss_G: -0.072
+Epoch: 3900   Loss_F: -0.068   Loss_R: -0.098   Penalty: 0.0156   Loss_G: -0.129
+Epoch: 0   Loss_F: 0.307   Loss_R: -0.608   Penalty: 0.0106   Loss_G: -0.651
+Epoch: 100   Loss_F: -0.119   Loss_R: -0.065   Penalty: 0.0081   Loss_G: -0.121
+Epoch: 200   Loss_F: -0.075   Loss_R: -0.120   Penalty: 0.0059   Loss_G: -0.108
+Epoch: 300   Loss_F: -0.321   Loss_R: 0.023   Penalty: 0.0789   Loss_G: -0.001
+Epoch: 400   Loss_F: -0.030   Loss_R: -0.095   Penalty: 0.0063   Loss_G: -0.116
+Epoch: 500   Loss_F: -0.012   Loss_R: -0.135   Penalty: 0.0050   Loss_G: -0.122
+Epoch: 600   Loss_F: -0.138   Loss_R: 0.052   Penalty: 0.0071   Loss_G: -0.053
+Epoch: 700   Loss_F: -0.391   Loss_R: 0.113   Penalty: 0.0596   Loss_G: 0.030
+Epoch: 800   Loss_F: 0.064   Loss_R: -0.458   Penalty: 0.0520   Loss_G: -0.097
+Epoch: 900   Loss_F: -0.104   Loss_R: -0.133   Penalty: 0.0118   Loss_G: -0.164
+Epoch: 1000   Loss_F: -0.068   Loss_R: -0.176   Penalty: 0.0282   Loss_G: -0.137
+Epoch: 1100   Loss_F: -0.345   Loss_R: 0.012   Penalty: 0.0734   Loss_G: -0.048
+Epoch: 1200   Loss_F: -0.074   Loss_R: -0.126   Penalty: 0.0154   Loss_G: -0.167
+Epoch: 1300   Loss_F: -0.244   Loss_R: 0.041   Penalty: 0.0305   Loss_G: -0.045
+Epoch: 1400   Loss_F: -0.204   Loss_R: -0.035   Penalty: 0.0081   Loss_G: -0.405
+Epoch: 1500   Loss_F: -0.072   Loss_R: -0.117   Penalty: 0.0093   Loss_G: -0.107
+Epoch: 1600   Loss_F: -0.075   Loss_R: -0.079   Penalty: 0.0027   Loss_G: -0.096
+Epoch: 1700   Loss_F: 0.051   Loss_R: -0.338   Penalty: 0.0090   Loss_G: -0.446
+Epoch: 1800   Loss_F: -0.070   Loss_R: -0.091   Penalty: 0.0045   Loss_G: -0.242
+Epoch: 1900   Loss_F: -0.005   Loss_R: -0.154   Penalty: 0.0040   Loss_G: -0.150
+Epoch: 2000   Loss_F: -0.084   Loss_R: -0.043   Penalty: 0.0087   Loss_G: -0.128
+Epoch: 2100   Loss_F: -0.175   Loss_R: -0.105   Penalty: 0.0324   Loss_G: -0.084
+Epoch: 2200   Loss_F: -0.238   Loss_R: 0.025   Penalty: 0.0286   Loss_G: -0.082
+Epoch: 2300   Loss_F: -0.191   Loss_R: -0.082   Penalty: 0.0463   Loss_G: -0.081
+Epoch: 2400   Loss_F: 0.035   Loss_R: -0.183   Penalty: 0.0076   Loss_G: -0.150
+Epoch: 2500   Loss_F: -0.032   Loss_R: -0.307   Penalty: 0.0493   Loss_G: -0.308
+Epoch: 2600   Loss_F: -0.145   Loss_R: -0.105   Penalty: 0.0281   Loss_G: -0.159
+Epoch: 2700   Loss_F: -0.218   Loss_R: -0.179   Penalty: 0.0851   Loss_G: -0.189
+Epoch: 2800   Loss_F: 0.012   Loss_R: -0.274   Penalty: 0.0262   Loss_G: -0.254
+Epoch: 2900   Loss_F: 0.005   Loss_R: -0.234   Penalty: 0.0090   Loss_G: -0.138
+Epoch: 3000   Loss_F: -0.171   Loss_R: -0.057   Penalty: 0.0302   Loss_G: -0.071
+Epoch: 3100   Loss_F: -0.332   Loss_R: -0.053   Penalty: 0.0493   Loss_G: 0.026
+Epoch: 3200   Loss_F: -0.167   Loss_R: -0.100   Penalty: 0.0182   Loss_G: -0.080
+Epoch: 3300   Loss_F: -0.168   Loss_R: 0.007   Penalty: 0.0186   Loss_G: -0.125
+Epoch: 3400   Loss_F: -0.201   Loss_R: 0.094   Penalty: 0.0154   Loss_G: -0.101
+Epoch: 3500   Loss_F: -0.093   Loss_R: -0.054   Penalty: 0.0131   Loss_G: -0.099
