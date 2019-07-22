@@ -122,3 +122,29 @@ Epoch: 3200   Loss_F: -0.167   Loss_R: -0.100   Penalty: 0.0182   Loss_G: -0.080
 Epoch: 3300   Loss_F: -0.168   Loss_R: 0.007   Penalty: 0.0186   Loss_G: -0.125
 Epoch: 3400   Loss_F: -0.201   Loss_R: 0.094   Penalty: 0.0154   Loss_G: -0.101
 Epoch: 3500   Loss_F: -0.093   Loss_R: -0.054   Penalty: 0.0131   Loss_G: -0.099
+Epoch: 3600   Loss_F: -0.092   Loss_R: -0.204   Penalty: 0.0229   Loss_G: -0.091
+Epoch: 3700   Loss_F: -0.038   Loss_R: -0.216   Penalty: 0.0085   Loss_G: -0.131
+Epoch: 3800   Loss_F: -0.175   Loss_R: -0.025   Penalty: 0.0270   Loss_G: -0.123
+Epoch: 3900   Loss_F: -0.186   Loss_R: -0.078   Penalty: 0.0241   Loss_G: -0.118
+Traceback (most recent call last):
+  File "run.py", line 4, in <module>
+    import joblib
+ModuleNotFoundError: No module named 'joblib'
+run.py:145: UserWarning: volatile was removed and now has no effect. Use `with torch.no_grad():` instead.
+  train_tmp = discriminator.model.downsample_to_block(Variable(torch.from_numpy(train).cuda(),volatile=True),discriminator.model.cur_block).data.cpu()
+run.py:164: UserWarning: volatile was removed and now has no effect. Use `with torch.no_grad():` instead.
+  z_vars = Variable(torch.from_numpy(z_vars),volatile=True).cuda()
+/home/fanjiahao/.conda/envs/eeggan/lib/python3.6/site-packages/torch/nn/modules/upsampling.py:129: UserWarning: nn.Upsample is deprecated. Use nn.functional.interpolate instead.
+  warnings.warn("nn.{} is deprecated. Use nn.functional.interpolate instead.".format(self.name))
+/home/fanjiahao/.conda/envs/eeggan/lib/python3.6/site-packages/torch/nn/functional.py:2423: UserWarning: Default upsampling behavior when mode=linear is changed to align_corners=False since 0.4.0. Please specify align_corners=True if the old behavior is desired. See the documentation of nn.Upsample for details.
+  "See the documentation of nn.Upsample for details.".format(mode))
+Epoch: 0   Loss_F: -0.027   Loss_R: -0.008   Penalty: 0.0019   Loss_G: -0.011
+run.py:192: UserWarning: volatile was removed and now has no effect. Use `with torch.no_grad():` instead.
+  z_vars = Variable(torch.from_numpy(z_vars_im),volatile=True).cuda()
+Epoch: 100   Loss_F: -0.058   Loss_R: 0.057   Penalty: 0.0000   Loss_G: 0.046
+Epoch: 200   Loss_F: 0.084   Loss_R: -0.090   Penalty: 0.0000   Loss_G: -0.097
+Epoch: 300   Loss_F: 0.050   Loss_R: -0.051   Penalty: 0.0000   Loss_G: -0.063
+Epoch: 400   Loss_F: 0.061   Loss_R: -0.068   Penalty: 0.0003   Loss_G: -0.062
+Epoch: 500   Loss_F: 0.028   Loss_R: -0.038   Penalty: 0.0004   Loss_G: -0.058
+Epoch: 600   Loss_F: -0.006   Loss_R: 0.001   Penalty: 0.0005   Loss_G: -0.047
+Epoch: 700   Loss_F: -0.084   Loss_R: 0.082   Penalty: 0.0000   Loss_G: 0.083

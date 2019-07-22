@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 import random
 import scipy.io as scio
 import glob
-
+import time
 plt.switch_backend('agg')
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 torch.backends.cudnn.enabled=True
@@ -138,7 +138,7 @@ discriminator.train()
 
 i_epoch = 0
 z_vars_im = rng.normal(0,1,size=(1000,n_z)).astype(np.float32) #see 1000*200
-
+start_time=time.time()
 for i_block in range(i_block_tmp,n_blocks):
     c = 0
     # train_tmp down_sample to fit the current cric block
@@ -251,3 +251,5 @@ for i_block in range(i_block_tmp,n_blocks):
     fade_alpha = 0.
     generator.model.cur_block += 1
     discriminator.model.cur_block -= 1
+end_time=time.time()
+print("time in total",int((start_time-end_time)/1000*60*60),"min")
