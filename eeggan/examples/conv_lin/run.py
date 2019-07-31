@@ -34,10 +34,10 @@ lr = 0.001
 n_blocks = 6
 rampup = 2000.
 block_epochs = [2000,4000,4000,4000,4000,4000]
-n_stage='N2'
+n_stage='REM'
 subj_ind = int(os.getenv('SLURM_ARRAY_TASK_ID','0'))
 # FIXME original task_ind is 0
-task_ind = 1#subj_ind
+task_ind = 2#subj_ind
 # FIXME allocate specific GPu
 torch.cuda.set_device(3)
 # #subj_ind = 9
@@ -69,12 +69,13 @@ data_path='/home/fanjiahao/GAN/extractSleepData/output/stages-c3-128/*.mat'
 data_list=glob.glob(os.path.join(data_path))
 data_list.sort()
 for i in range(len(data_list)):
-    data_tmp = scio.loadmat(os.path.join(data_list[i],'stages.mat'))
-    eeg_data_tmp=data_tmp[n_stage]
-    try:
-        data_set=np.vstack((data_set, eeg_data_tmp))
-    except NameError:
-        data_set=eeg_data_tmp[:,:]
+    data_tmp = scio.loadmat(os.path.join(data_list[i], 'stages.mat'))
+    if n_stage in data_tmp:
+        eeg_data_tmp=data_tmp[n_stage]
+        try:
+            data_set=np.vstack((data_set, eeg_data_tmp))
+        except NameError:
+            data_set=eeg_data_tmp[:,:]
 
 
 
@@ -253,3 +254,4 @@ for i_block in range(i_block_tmp,n_blocks):
     discriminator.model.cur_block -= 1
 end_time=time.time()
 print("time in total",int((start_time-end_time)/1000*60*60),"min")
+#TODO:fix all volatile=true issue
