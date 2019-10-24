@@ -19,32 +19,43 @@ import random
 import scipy.io as scio
 import glob
 import time
+#设置图像渲染方式
 plt.switch_backend('agg')
-os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+#设置GPU以同步方式运算,默认是异步
+# os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 torch.backends.cudnn.enabled=True
+# 对于固定的CNN结构，先测试选出最优效率的优化算法
 torch.backends.cudnn.benchmark=True
-
+# see????
 n_critic = 5
-#fixme 64-->8
+
+## 固定参数
 n_batch = 64
-input_length = 768
 jobid = 0
 n_z = 200
 lr = 0.001
 n_blocks = 6
 rampup = 2000.
 block_epochs = [2000,4000,4000,4000,4000,4000]
+##  固定参数 end
+
+## 可配置参数
 n_stage='WAKE'
 # FIXME original task_ind is 0
-task_ind = 4#subj_ind
+task_ind = 0#subj_ind
 # FIXME allocate specific GPu
 torch.cuda.set_device(0)
-# #subj_ind = 9
+## 可配置参数 end
+
+## 设置随机种子
 np.random.seed(task_ind)
 torch.manual_seed(task_ind)
 torch.cuda.manual_seed_all(task_ind)
 random.seed(task_ind)
 rng = np.random.RandomState(task_ind)
+## 设置随机种子 end
+
+## 设置数据路径
 # data = os.path.join('/home/fanjiahao/GAN/extractSleepData/output/stages-c3-128/01-03-0064.mat/stages.mat')
 #for estar
 # data_path='/home/STOREAGE/fanjiahao/GAN/data/stages-c3-128/*.mat'
@@ -80,7 +91,7 @@ train = train/np.abs(train).max()
 # target_onehot[:,target] = 1
 
 
-modelpath = './models/GAN_debug/conv_cub_'+str(task_ind)+'_'+n_stage
+modelpath = './models/GAN_debug/conv_linear_'+str(task_ind)+'_'+n_stage
 modelname = 'Progressive%s'
 if not os.path.exists(modelpath):
     os.makedirs(modelpath)
@@ -170,7 +181,7 @@ for i_block in range(i_block_tmp,n_blocks):
             joblib.dump((i_epoch,losses_d,losses_g),os.path.join(modelpath,modelname%jobid+'_%d.data'%i_epoch),compress=True)
             #joblib.dump((n_epochs,n_z,n_critic,batch_size,lr),os.path.join(modelpath,modelname%jobid+'_%d.params'%i_epoch),compress=True)
 
-            freqs_tmp = np.fft.rfftfreq(train_tmp.numpy().shape[2],d=1/(250./np.power(2,n_blocks-1-i_block)))
+            freqs_tmp = np.fft.rfftfreq(train_tmp.numpy().shape[2],d=1/(128./np.power(2,n_blocks-1-i_block)))
 
             train_fft = np.fft.rfft(train_tmp.numpy(),axis=2)
             train_amps = np.abs(train_fft).mean(axis=3).mean(axis=0).squeeze()
