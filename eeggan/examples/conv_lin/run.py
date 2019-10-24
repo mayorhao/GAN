@@ -19,48 +19,43 @@ import random
 import scipy.io as scio
 import glob
 import time
+#设置图像渲染方式
 plt.switch_backend('agg')
-os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+#设置GPU以同步方式运算,默认是异步
+# os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 torch.backends.cudnn.enabled=True
+# 对于固定的CNN结构，先测试选出最优效率的优化算法
 torch.backends.cudnn.benchmark=True
-
+# see????
 n_critic = 5
-#fixme 64-->8
+
+## 固定参数
 n_batch = 64
-input_length = 768
 jobid = 0
 n_z = 200
 lr = 0.001
 n_blocks = 6
 rampup = 2000.
 block_epochs = [2000,4000,4000,4000,4000,4000]
-n_stage='REM'
-subj_ind = int(os.getenv('SLURM_ARRAY_TASK_ID','0'))
-# FIXME original task_ind is 0
-task_ind = 2#subj_ind
-# FIXME allocate specific GPu
-torch.cuda.set_device(3)
-# #subj_ind = 9
-subj_names = ['BhNoMoSc1',
-             'FaMaMoSc1',
-             'FrThMoSc1',
-             'GuJoMoSc01',
-             'KaUsMoSc1',
-             'LaKaMoSc1',
-             'LuFiMoSc3',
-             'MaJaMoSc1',
-             'MaKiMoSC01',
-             'MaVoMoSc1',
-             'PiWiMoSc1',
-             'RoBeMoSc03',
-             'RoScMoSc1',
-             'StHeMoSc01']
+##  固定参数 end
 
+## 可配置参数
+n_stage='WAKE'
+# FIXME original task_ind is 0
+task_ind = 0#subj_ind
+# FIXME allocate specific GPu
+torch.cuda.set_device(0)
+## 可配置参数 end
+
+## 设置随机种子
 np.random.seed(task_ind)
 torch.manual_seed(task_ind)
 torch.cuda.manual_seed_all(task_ind)
 random.seed(task_ind)
 rng = np.random.RandomState(task_ind)
+## 设置随机种子 end
+
+## 设置数据路径
 # data = os.path.join('/home/fanjiahao/GAN/extractSleepData/output/stages-c3-128/01-03-0064.mat/stages.mat')
 #for estar
 # data_path='/home/STOREAGE/fanjiahao/GAN/data/stages-c3-128/*.mat'
@@ -126,8 +121,10 @@ losses_g = []
 #fixme load models start
 # generator.load_model(os.path.join(modelpath,modelname%jobid+'.gen'))
 # discriminator.load_model(os.path.join(modelpath,modelname%jobid+'.disc'))
-# # i_block_tmp=3
-# i_epoch_tmp=400
+# i_block_tmp=5
+# i_epoch_tmp=2500
+# generator.model.cur_block = i_block_tmp
+# discriminator.model.cur_block = n_blocks-1-i_block_tmp
 # i_epoch,loss_d,loss_g=joblib.load(os.path.join(modelpath,modelname%jobid+'_.data'))
 # #fixme load models end
 
@@ -143,7 +140,7 @@ start_time=time.time()
 for i_block in range(i_block_tmp,n_blocks):
     c = 0
     # train_tmp down_sample to fit the current cric block
-    train_tmp = discriminator.model.downsample_to_block(Variable(torch.from_numpy(train).cuda(),volatile=True),discriminator.model.cur_block).data.cpu()
+    train_tmp = discriminator.model.downsample_to_block(Variable(torch.from_numpy(train).cuda(),requires_grad=False),discriminator.model.cur_block).data.cpu()
 
     for i_epoch in range(i_epoch_tmp,block_epochs[i_block]):
         i_epoch_tmp = 0
@@ -162,7 +159,7 @@ for i_block in range(i_block_tmp,n_blocks):
                 batch_real = Variable(train_batches,requires_grad=True).cuda()
 #see indicate the batchsize
                 z_vars = rng.normal(0,1,size=(len(batches[it*n_critic+i_critic]),n_z)).astype(np.float32)
-                z_vars = Variable(torch.from_numpy(z_vars),volatile=True).cuda()
+                z_vars = Variable(torch.from_numpy(z_vars),requires_grad=False).cuda()
                 batch_fake = Variable(generator(z_vars).data,requires_grad=True).cuda()
             #see this line error occurs
                 loss_d = discriminator.train_batch(batch_real,batch_fake)
@@ -184,13 +181,13 @@ for i_block in range(i_block_tmp,n_blocks):
             joblib.dump((i_epoch,losses_d,losses_g),os.path.join(modelpath,modelname%jobid+'_%d.data'%i_epoch),compress=True)
             #joblib.dump((n_epochs,n_z,n_critic,batch_size,lr),os.path.join(modelpath,modelname%jobid+'_%d.params'%i_epoch),compress=True)
 
-            freqs_tmp = np.fft.rfftfreq(train_tmp.numpy().shape[2],d=1/(250./np.power(2,n_blocks-1-i_block)))
+            freqs_tmp = np.fft.rfftfreq(train_tmp.numpy().shape[2],d=1/(128./np.power(2,n_blocks-1-i_block)))
 
             train_fft = np.fft.rfft(train_tmp.numpy(),axis=2)
             train_amps = np.abs(train_fft).mean(axis=3).mean(axis=0).squeeze()
 
 
-            z_vars = Variable(torch.from_numpy(z_vars_im),volatile=True).cuda()
+            z_vars = Variable(torch.from_numpy(z_vars_im),requires_grad=False).cuda()
             batch_fake = generator(z_vars)
             fake_fft = np.fft.rfft(batch_fake.data.cpu().numpy(),axis=2)
             # here are the average of train batches

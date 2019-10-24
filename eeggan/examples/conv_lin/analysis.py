@@ -13,9 +13,11 @@ import sys
 torch.cuda.set_device(3)
 sys.path.append("/home/fanjiahao/GAN/GAN")
 from eeggan.examples.conv_lin.model import Generator,Discriminator
-MODEL_NAME="conv_linear_0_N1"
+MODEL_NAME="conv_linear_2_REM"
+
+
 model_path='./models/GAN_debug/'+MODEL_NAME+'/Progressive0.gen'
-N_STAGE='N1'
+N_STAGE='REM'
 def fftTransform(data,sampleRate=128.):
     fft = np.fft.rfft(data.numpy(), axis=2)
     ams = np.abs(fft).mean(axis=3).mean(axis=0).squeeze()
@@ -64,7 +66,7 @@ def main():
     fake_fft_ams,fake_show_rate=fftTransform(batch_fake.data.cpu())
     real_fft_ams,real_show_rate=fftTransform(batch_real.data.cpu())
     #start to draw fig
-    fig_path=os.path.join('./analysis',MODEL_NAME)
+    fig_path=os.path.join('./analysis',N_STAGE)
     if not os.path.exists(fig_path):
         os.makedirs(fig_path)
     freqs_tmp = np.fft.rfftfreq((batch_real.data.cpu().numpy().shape[2]), d=1 /128.)
@@ -74,7 +76,7 @@ def main():
     plt.title('Frequency Spektrum')
     plt.xlabel('Hz')
     plt.legend()
-    plt.savefig(os.path.join(fig_path,N_STAGE+'_fft.png'))
+    plt.savefig(os.path.join(fig_path,'fft.png'))
     plt.close()
     #end draw fig
     # draw time fig
@@ -87,7 +89,7 @@ def main():
         plt.xticks((), ())
         plt.yticks((), ())
     plt.subplots_adjust(hspace=0)
-    plt.savefig(os.path.join(os.path.join(fig_path,N_STAGE+'timeseries')))
+    plt.savefig(os.path.join(os.path.join(fig_path,'timeseries')))
     plt.close()
     # draw time fig end
     # draw temporary fig real and fake
@@ -96,15 +98,31 @@ def main():
     plt.plot(np.mean(batch_real,axis=3).mean(axis=0).squeeze(),label="True")
     plt.xlabel('time')
     plt.legend()
-    plt.savefig(os.path.join(fig_path,N_STAGE+'_mean_temporary.png'))
+    plt.savefig(os.path.join(fig_path,'mean_temporary.png'))
     plt.close()
     # draw temporary fig real and fake end
     # save data
-    filename=os.path.join(fig_path,'synthesis_'+N_STAGE+'.mat')
-    scio.savemat(filename,{
-        'x':np.squeeze(batch_fake)
-    })
+    filename=os.path.join(fig_path,'synthesis.mat')
+    if not os.path.exists(filename):
+        scio.savemat(filename,{
+            'x':np.squeeze(batch_fake)
+        })
     # save data end
+    #draw filtered rawsignal time serise
+    filtered_sinal=scio.loadmat(os.path.join(fig_path,'synthesis_filtered.mat'))['x']
+    for i in range(10):
+        plt.subplot(10, 1, i + 1)
+        plt.plot(filtered_sinal[i].squeeze(),label='after')
+        plt.plot(batch_fake[i].squeeze(),label='before')
+        plt.xticks((), ())
+        plt.yticks((), ())
+        plt.legend()
+    plt.subplots_adjust(hspace=0)
+    plt.savefig(os.path.join(os.path.join(fig_path,'filtered_before_after_timeseries')))
+    plt.close()
+
+    #draw filtered rawsignal time serise end
+    #
 
 if __name__ == '__main__':
     main()

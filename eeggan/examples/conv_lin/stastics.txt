@@ -1,0 +1,11 @@
+N1 : 4518 | 37.65 hour
+
+N2 : 29191 | 243.25833333333333 hour
+
+N3 : 7566 | 63.05 hour
+
+REM : 10410 |86.75 hour
+
+subject missing:no.43,no.49
+
+wake period are slice by edge 30*2*2 epoch
