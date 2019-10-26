@@ -96,6 +96,7 @@ def create_gen_blocks(n_chans,z_vars):
 														gain=calculate_gain('leaky_relu')),
 								nn.LeakyReLU(0.2),
 								PixelNorm())
+	# infilters:50 n_chans=1
 	def create_out_sequence(n_chans,in_filters):
 		return nn.Sequential(weight_scale(nn.Conv1d(in_filters,n_chans,1),
 														gain=calculate_gain('linear')),
@@ -153,7 +154,7 @@ def create_gen_blocks(n_chans,z_vars):
 	blocks.append(tmp_block)
 	return blocks
 
-
+#n_chans=1 z_vars=200
 class Generator(WGAN_I_Generator):
 	def __init__(self,n_chans,z_vars):
 		super(Generator,self).__init__()

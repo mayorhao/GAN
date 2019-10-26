@@ -42,7 +42,7 @@ block_epochs = [2000,4000,4000,4000,4000,4000]
 ## 可配置参数
 n_stage='WAKE'
 # FIXME original task_ind is 0
-task_ind = 0#subj_ind
+task_ind = 4#subj_ind
 # FIXME allocate specific GPu
 torch.cuda.set_device(0)
 ## 可配置参数 end
@@ -55,7 +55,6 @@ random.seed(task_ind)
 rng = np.random.RandomState(task_ind)
 ## 设置随机种子 end
 
-## 设置数据路径
 # data = os.path.join('/home/fanjiahao/GAN/extractSleepData/output/stages-c3-128/01-03-0064.mat/stages.mat')
 #for estar
 # data_path='/home/STOREAGE/fanjiahao/GAN/data/stages-c3-128/*.mat'
@@ -181,7 +180,7 @@ for i_block in range(i_block_tmp,n_blocks):
             joblib.dump((i_epoch,losses_d,losses_g),os.path.join(modelpath,modelname%jobid+'_%d.data'%i_epoch),compress=True)
             #joblib.dump((n_epochs,n_z,n_critic,batch_size,lr),os.path.join(modelpath,modelname%jobid+'_%d.params'%i_epoch),compress=True)
 
-            freqs_tmp = np.fft.rfftfreq(train_tmp.numpy().shape[2],d=1/(128./np.power(2,n_blocks-1-i_block)))
+            freqs_tmp = np.fft.rfftfreq(train_tmp.numpy().shape[2],d=1/(250./np.power(2,n_blocks-1-i_block)))
 
             train_fft = np.fft.rfft(train_tmp.numpy(),axis=2)
             train_amps = np.abs(train_fft).mean(axis=3).mean(axis=0).squeeze()

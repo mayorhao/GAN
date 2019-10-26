@@ -87,7 +87,7 @@ def create_disc_blocks(n_chans):
 def create_gen_blocks(n_chans,z_vars):
 	def create_conv_sequence(in_filters,out_filters,factor=2):
 		# see mode最近邻（nearest），线性插值（linear），双线性插值（bilinear），三次线性插值（trilinear），默认是最近邻（nearest）
-		return nn.Sequential(nn.Upsample(mode='linear',scale_factor=factor),
+		return nn.Sequential(nn.Upsample(mode='linear',scale_factor=factor,align_corners=True),
 								weight_scale(nn.Conv1d(in_filters,out_filters,9,padding=4),
 														gain=calculate_gain('leaky_relu')),
 								nn.LeakyReLU(0.2),
@@ -102,7 +102,7 @@ def create_gen_blocks(n_chans,z_vars):
 								Reshape([[0],[1],[2],1]),
 								PixelShuffle2d([1,n_chans]))
 	def create_fade_sequence(factor=2):
-		return nn.Upsample(mode='bilinear',scale_factor=(factor,1))
+		return nn.Upsample(mode='bilinear',scale_factor=(factor,1),align_corners=True)
 	blocks = []
 	#see n*200-->n*600-->n*50*12-->n*50*24
 	tmp_block = ProgressiveGeneratorBlock(

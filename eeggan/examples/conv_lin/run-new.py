@@ -9,7 +9,7 @@ import sys
 # for dell
 sys.path.append("/home/fanjiahao/GAN/GAN")
 from braindecode.datautil.iterators import get_balanced_batches
-from eeggan.examples.conv_cub.model import Generator,Discriminator
+from eeggan.examples.conv_lin.model import Generator,Discriminator
 from eeggan.util import weight_filler
 import torch
 import torch.nn as nn
@@ -30,12 +30,12 @@ torch.backends.cudnn.benchmark=True
 # see????
 # 读取参数
 parser=argparse.ArgumentParser()
-parser.add_argument("--stage",type=str,default="WAKE",help="determin which stege to be trained")
+parser.add_argument("--stage",type=str,default="N1",help="determin which stege to be trained")
 parser.add_argument("--task_id",type=int,default=0,help="the number to generate random seed")
 parser.add_argument("--GPU",type=int,default=0,help="the GPU device id")
 parser.add_argument("--i_block_tmp",type=int,default=0,help="which block to start with?")
 parser.add_argument("--i_epoch_tmp",type=int,default=0,help="which epoch to start with?")
-parser.add_argument("--reuse",type=bool,default=False,help="which epoch to start with?")
+parser.add_argument("--reuse",type=bool,default=False,help="Do you need to resuse the models")
 
 args=parser.parse_args()
 # 读取参数 end
@@ -75,21 +75,12 @@ data = os.path.join('/home/fanjiahao/GAN/extractSleepData/output/stages-c3-128/0
 data_path='/home/fanjiahao/GAN/extractSleepData/output/stage-total/total_stage.mat'
 raw_data=scio.loadmat(data_path)
 data_set=raw_data[n_stage]
-# data_mat=scio.loadmat('/home/STOREAGE/fanjiahao/GAN/eeggan/stages.mat')
-# EEG_data=data_mat['N1']
-# train_set = EEG_data['train_set']
-# test_set = EEG_data['test_set']
-# train = np.concatenate((train_set.X,test_set.X))
-# target = np.concatenate((train_set.y,test_set.y))
 train=np.expand_dims(data_set,axis=1)
 # shape is N*C*3840*1
 train=np.reshape(train,(train.shape[0],train.shape[1],train.shape[2],1))
-# FIXME leave one-hot
-# target_onehot = np.zeros((target.shape[0],2))
-# target_onehot[:,target] = 1
 
 
-modelpath = './models/GAN_debug/formal'+'_'+n_stage
+modelpath = './models/formal'+'_'+n_stage
 modelname = 'Progressive%s'
 if not os.path.exists(modelpath):
     os.makedirs(modelpath)
@@ -122,10 +113,6 @@ if args.reuse:
     generator.load_model(os.path.join(modelpath,modelname%jobid+'.gen'))
     print("start load criminator model...,from {}".format(os.path.join(modelpath,modelname%jobid+'.disc')))
     discriminator.load_model(os.path.join(modelpath,modelname%jobid+'.disc'))
-    # i_block_tmp=5
-    # i_epoch_tmp=2500
-    # generator.model.cur_block = i_block_tmp
-    # discriminator.model.cur_block = n_blocks-1-i_block_tmp
     i_epoch,loss_d,loss_g=joblib.load(os.path.join(modelpath,modelname%jobid+'_.data'))
 # #fixme load models end
 
@@ -161,7 +148,7 @@ for i_block in range(i_block_tmp,n_blocks):
             for i_critic in range(n_critic):
                 train_batches = train_tmp[batches[it*n_critic+i_critic]]
                 batch_real = Variable(train_batches,requires_grad=True).cuda()
-            #see indicate the batchsize
+#see indicate the batchsize
                 z_vars = rng.normal(0,1,size=(len(batches[it*n_critic+i_critic]),n_z)).astype(np.float32)
                 z_vars = Variable(torch.from_numpy(z_vars),requires_grad=False).cuda()
                 batch_fake = Variable(generator(z_vars).data,requires_grad=True).cuda()
@@ -176,12 +163,12 @@ for i_block in range(i_block_tmp,n_blocks):
         losses_g.append(loss_g)
 
 
-        if i_epoch%100 == 0:
+        if (i_epoch+1)%100 == 0:
 
             generator.eval()
             discriminator.eval()
             epoch_hundred_time=time.time()
-            print('Epoch: %d   Loss_F: %.3f   Loss_R: %.3f   Penalty: %.4f   Loss_G: %.3f  Duration:%.2f min'%(i_epoch,loss_d[0],loss_d[1],loss_d[2],loss_g,(epoch_hundred_time-last_epoch_hundred_time)/60))
+            print('Block: %d Epoch: %d   Loss_F: %.3f   Loss_R: %.3f   Penalty: %.4f   Loss_G: %.3f  Duration:%.2f min'%(i_block,i_epoch,loss_d[0],loss_d[1],loss_d[2],loss_g,(epoch_hundred_time-last_epoch_hundred_time)/60))
             last_epoch_hundred_time=epoch_hundred_time
             joblib.dump((i_epoch,losses_d,losses_g),os.path.join(modelpath,modelname%jobid+'_.data'),compress=True)
             joblib.dump((i_epoch,losses_d,losses_g),os.path.join(modelpath,modelname%jobid+'_%d.data'%i_epoch),compress=True)
