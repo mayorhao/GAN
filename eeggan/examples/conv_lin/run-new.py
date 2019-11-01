@@ -46,8 +46,8 @@ jobid = 0
 n_z = 200
 lr = 0.001
 n_blocks = 6
-rampup = 200 # 这里resamle 跟随 epoch 数目来增加和减少
-block_epochs = [200,200,400,400,400,400]
+rampup = 500 # 这里resamle 跟随 epoch 数目来增加和减少
+block_epochs = [500,1000,1000,1000,1000,1000]
 ##  固定参数 end
 
 ## 可配置参数
@@ -78,9 +78,13 @@ data_set=raw_data[n_stage]
 train=np.expand_dims(data_set,axis=1)
 # shape is N*C*3840*1
 train=np.reshape(train,(train.shape[0],train.shape[1],train.shape[2],1))
+## 標準化
+train = train-train.mean()
+train = train/train.std()
+train = train/np.abs(train).max()
+## 標準化 end
 
-
-modelpath = './models/formal'+'_'+n_stage
+modelpath = './models/formal-500-1000/'+'/formal_'+n_stage
 modelname = 'Progressive%s'
 if not os.path.exists(modelpath):
     os.makedirs(modelpath)
