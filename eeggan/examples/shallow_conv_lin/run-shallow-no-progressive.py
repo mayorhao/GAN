@@ -42,7 +42,7 @@ parser.add_argument("--task_id", type=int, default=0, help="the number to genera
 parser.add_argument("--GPU", type=int, default=0, help="the GPU device id")
 parser.add_argument("--i_block_tmp", type=int, default=0, help="which block to start with?")
 parser.add_argument("--i_epoch_tmp", type=int, default=0, help="which epoch to start with?")
-parser.add_argument("--reuse", type=bool, default=True, help="Do you need to resuse the models")
+parser.add_argument("--reuse", type=bool, default=False, help="Do you need to resuse the models")
 parser.add_argument("--fold_idx", type=int, default=0, help="folds number")
 
 args = parser.parse_args()
@@ -67,7 +67,7 @@ task_id_map = {
 ## 可配置参数
 n_fold = args.fold_idx
 n_stage = args.stage
-task_ind = task_id_map[n_stage]
+task_ind = args.task_id
 # FIXME original task_ind is 0
 task_ind = args.task_id  # subj_ind
 # FIXME allocate specific GPu
