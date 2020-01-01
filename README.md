@@ -14,6 +14,10 @@ cd /home/fanjiahao/GAN/GAN/eeggan/examples/shallow_conv_lin
 conda activate eeggan
 python run-new.py --stage=N1 --task_id=0 --GPU=0
 
+cd /home/STOREAGE/fanjiahao/code/[git]GAN/GAN/eeggan/examples/shallow_conv_lin
+python run-new.py --stage=N1 --task_id=0 --GPU=0
+
+
 
 task_id_map={
     "N1":0,
