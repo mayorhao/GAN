@@ -153,6 +153,8 @@ if args.reuse:
     print("start load criminator model...,from {}".format(os.path.join(modelpath, modelname % jobid + '.disc')))
     discriminator.load_model(os.path.join(modelpath, modelname % jobid + '.disc'))
     fade_alpha = i_epoch_tmp * rampup
+    generator.model.alpha = fade_alpha
+    discriminator.model.alpha = fade_alpha
     i_epoch, loss_d, loss_g = joblib.load(os.path.join(modelpath, modelname % jobid + '_.data'))
 # #fixme load models end
 
