@@ -12,7 +12,7 @@ server = 'dell' if os.getcwd().find('STOREAGE') == -1 else 'estar'
 if server == 'dell':
     sys.path.append("/home/fanjiahao/GAN/GAN")
 else:
-    sys.path.append("/home/STOREAGE/fanjiahao/code/GAN")
+    sys.path.append("/home/STOREAGE/fanjiahao/code/[git]GAN/GAN")
 # for dell
 from braindecode.datautil.iterators import get_balanced_batches
 from eeggan.examples.shallow_conv_lin.model import Generator, Discriminator
@@ -43,7 +43,7 @@ parser.add_argument("--GPU", type=int, default=0, help="the GPU device id")
 parser.add_argument("--i_block_tmp", type=int, default=0, help="which block to start with?")
 parser.add_argument("--i_epoch_tmp", type=int, default=0, help="which epoch to start with?")
 parser.add_argument("--reuse", type=bool, default=False, help="Do you need to resuse the models")
-parser.add_argument("--fold_idx", type=int, default=0, help="folds number")
+parser.add_argument("--fold_idx", type=int, default=1, help="folds number")
 
 
 args = parser.parse_args()
@@ -68,9 +68,8 @@ task_id_map = {
 ## 可配置参数
 n_fold = args.fold_idx
 n_stage = args.stage
-task_ind = args.task_id
 # FIXME original task_ind is 0
-task_ind = args.task_id  # subj_ind
+task_ind = task_id_map[n_stage]
 # FIXME allocate specific GPu
 torch.cuda.set_device(args.GPU)
 print(
@@ -154,6 +153,8 @@ if args.reuse:
     print("start load criminator model...,from {}".format(os.path.join(modelpath, modelname % jobid + '.disc')))
     discriminator.load_model(os.path.join(modelpath, modelname % jobid + '.disc'))
     fade_alpha = i_epoch_tmp * rampup
+    generator.model.alpha = fade_alpha
+    discriminator.model.alpha = fade_alpha
     i_epoch, loss_d, loss_g = joblib.load(os.path.join(modelpath, modelname % jobid + '_.data'))
 # #fixme load models end
 
