@@ -42,8 +42,8 @@ parser.add_argument("--task_id", type=int, default=0, help="the number to genera
 parser.add_argument("--GPU", type=int, default=0, help="the GPU device id")
 parser.add_argument("--i_block_tmp", type=int, default=0, help="which block to start with?")
 parser.add_argument("--i_epoch_tmp", type=int, default=0, help="which epoch to start with?")
-parser.add_argument("--reuse", type=bool, default=True, help="Do you need to resuse the models")
-parser.add_argument("--fold_idx", type=int, default=0, help="folds number")
+parser.add_argument("--reuse", type=bool, default=False, help="Do you need to resuse the models")
+parser.add_argument("--fold_idx", type=int, default=1, help="folds number")
 
 args = parser.parse_args()
 # 读取参数 end
@@ -138,7 +138,7 @@ i_block_tmp = args.i_block_tmp
 i_epoch_tmp = args.i_epoch_tmp
 generator.model.cur_block = i_block_tmp
 discriminator.model.cur_block = n_blocks - 1 - i_block_tmp
-fade_alpha = i_epoch_tmp*rampup
+fade_alpha=1
 generator.model.alpha = fade_alpha
 discriminator.model.alpha = fade_alpha
 
@@ -152,6 +152,7 @@ if args.reuse:
     generator.load_model(os.path.join(modelpath, modelname % jobid + '.gen'))
     print("start load criminator model...,from {}".format(os.path.join(modelpath, modelname % jobid + '.disc')))
     discriminator.load_model(os.path.join(modelpath, modelname % jobid + '.disc'))
+    fade_alpha = i_epoch_tmp * rampup
     i_epoch, loss_d, loss_g = joblib.load(os.path.join(modelpath, modelname % jobid + '_.data'))
 # #fixme load models end
 
