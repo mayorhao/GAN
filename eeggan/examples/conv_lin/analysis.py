@@ -102,24 +102,24 @@ def main():
     plt.close()
     # draw temporary fig real and fake end
     # save data
-    filename=os.path.join(fig_path,'synthesis.mat')
+    filename=os.path.join(fig_path,'N1_GAN.mat')
     if not os.path.exists(filename):
         scio.savemat(filename,{
             'x':np.squeeze(batch_fake)
         })
     # save data end
     #draw filtered rawsignal time serise
-    filtered_sinal=scio.loadmat(os.path.join(fig_path,'synthesis_filtered.mat'))['x']
-    for i in range(10):
-        plt.subplot(10, 1, i + 1)
-        plt.plot(filtered_sinal[i].squeeze(),label='after')
-        plt.plot(batch_fake[i].squeeze(),label='before')
-        plt.xticks((), ())
-        plt.yticks((), ())
-        plt.legend()
-    plt.subplots_adjust(hspace=0)
-    plt.savefig(os.path.join(os.path.join(fig_path,'filtered_before_after_timeseries')))
-    plt.close()
+    # filtered_sinal=scio.loadmat(os.path.join(fig_path,'synthesis_filtered.mat'))['x']
+    # for i in range(10):
+    #     plt.subplot(10, 1, i + 1)
+    #     plt.plot(filtered_sinal[i].squeeze(),label='after')
+    #     plt.plot(batch_fake[i].squeeze(),label='before')
+    #     plt.xticks((), ())
+    #     plt.yticks((), ())
+    #     plt.legend()
+    # plt.subplots_adjust(hspace=0)
+    # plt.savefig(os.path.join(os.path.join(fig_path,'filtered_before_after_timeseries')))
+    # plt.close()
 
     #draw filtered rawsignal time serise end
     #

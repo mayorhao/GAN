@@ -8,7 +8,7 @@ import glob
 n_stage="WAKE"
 fig_path=os.path.join('../analysis_30K',n_stage)
 # filtered_signal=scio.loadmat(os.path.join('./',n_stage,'synthesis_filtered.mat'))['x']
-raw_signal=scio.loadmat(os.path.join('../analysis_30K',n_stage,'synthesis.mat'))['x']
+raw_signal=scio.loadmat(os.path.join('../analysis_30K',n_stage,'N1_GAN.mat'))['x']
 plt.figure()
 x = np.linspace(0, 30,3840)
 y = raw_signal[0]

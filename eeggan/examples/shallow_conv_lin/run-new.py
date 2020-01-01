@@ -14,7 +14,7 @@ else:
     sys.path.append("/home/STOREAGE/fanjiahao/code/GAN")
 # for dell
 from braindecode.datautil.iterators import get_balanced_batches
-from eeggan.examples.conv_lin.model import Generator,Discriminator
+from eeggan.examples.shallow_conv_lin.model import Generator,Discriminator
 from eeggan.util import weight_filler
 import torch
 import torch.nn as nn
@@ -37,11 +37,11 @@ torch.backends.cudnn.benchmark=True
 parser=argparse.ArgumentParser()
 parser.add_argument("--stage",type=str,default="N1",help="determin which stege to be trained")
 parser.add_argument("--task_id",type=int,default=0,help="the number to generate random seed")
-parser.add_argument("--GPU",type=int,default=2,help="the GPU device id")
+parser.add_argument("--GPU",type=int,default=0,help="the GPU device id")
 parser.add_argument("--i_block_tmp",type=int,default=0,help="which block to start with?")
 parser.add_argument("--i_epoch_tmp",type=int,default=0,help="which epoch to start with?")
 parser.add_argument("--reuse",type=bool,default=False,help="Do you need to resuse the models")
-parser.add_argument("--fold_idx",type=int,default=4,help="folds number")
+parser.add_argument("--fold_idx",type=int,default=0,help="folds number")
 
 args=parser.parse_args()
 # 读取参数 end
@@ -53,7 +53,7 @@ n_z = 200
 lr = 0.001
 n_blocks = 6
 rampup = 500 # 这里resamle 跟随 epoch 数目来增加和减少
-block_epochs = [500,1000,1000,1000,1000,1000]
+block_epochs = [1000,2000,2000,2000,2000,2000]
 ##  固定参数 end
 task_id_map={
     "N1":0,
@@ -70,7 +70,7 @@ task_ind = task_id_map[n_stage]
 task_ind = args.task_id#subj_ind
 # FIXME allocate specific GPu
 torch.cuda.set_device(args.GPU)
-print("Begin to train stage:{} ,GPU:{},task_id:{},block_tmp:{},epoch_tmp:{},folds:{}".format(n_stage,args.GPU,task_ind,args.i_block_tmp,args.i_epoch_tmp,n_fold))
+print("Begin to train stage:{} ,GPU:{},task_id:{},block_tmp:{},epoch_tmp:{},folds:{}".format(n_stage,args.GPU,task_ind,args.i_block_tmp,args.i_epoch_tmp,args.fold_idx))
 ## 可配置参数 end
 
 ## 设置随机种子
@@ -86,9 +86,8 @@ rng = np.random.RandomState(task_ind)
 #for estar
 # data_path='/home/STOREAGE/fanjiahao/GAN/data/stages-c3-128/*.mat'
 #for dell
-if server=='dell':
-    data_path='/home/fanjiahao/sleep-dataset/staged-sleep-edf'
-data_list=np.load(os.path.join("./","k-fold-plan","plan-edf.npz"),allow_pickle=True)["plan"]
+data_path='../../../data/stages-new'
+data_list=np.load(os.path.join("./","k-fold-plan","plan.npz"),allow_pickle=True)["plan"]
 data_list=np.array(data_list)
 subject_list=np.delete(data_list,n_fold,0)
 subject_list_temp=[]
@@ -115,7 +114,7 @@ train=np.reshape(train,(train.shape[0],train.shape[1],train.shape[2],1))
 # train = train/np.abs(train).max()
 ## 標準化 end
 
-modelpath = './models/edf-5_fold/k_fold_{}/{}'.format(n_fold,n_stage)
+modelpath = './models/5-fold-shallow/k_fold_{}/{}'.format(n_fold,n_stage)
 modelname = 'Progressive%s'
 if not os.path.exists(modelpath):
     os.makedirs(modelpath)
@@ -182,9 +181,7 @@ for i_block in range(i_block_tmp,n_blocks):
         for it in range(iters):
             for i_critic in range(n_critic):
                 train_batches = train_tmp[batches[it*n_critic+i_critic]]
-
                 batch_real = Variable(train_batches,requires_grad=True).cuda()
-                batch_real=batch_real.type(torch.cuda.FloatTensor)
 #see indicate the batchsize
                 z_vars = rng.normal(0,1,size=(len(batches[it*n_critic+i_critic]),n_z)).astype(np.float32)
                 z_vars = Variable(torch.from_numpy(z_vars),requires_grad=False).cuda()
@@ -257,6 +254,7 @@ for i_block in range(i_block_tmp,n_blocks):
             plt.title('Losses Discriminator')
             plt.legend()
             plt.subplot(3,2,2)
+            # Not match with the formula of the paper!! should be a minus operator!!
             plt.plot(np.asarray(losses_d)[:,0]+np.asarray(losses_d)[:,1]+np.asarray(losses_d)[:,2],label='Loss')
             plt.title('Loss Discriminator')
             plt.legend()
@@ -265,6 +263,7 @@ for i_block in range(i_block_tmp,n_blocks):
             plt.title('Penalty')
             plt.legend()
             plt.subplot(3,2,4)
+            # Wasserstein Distance not right
             plt.plot(-np.asarray(losses_d)[:,0]-np.asarray(losses_d)[:,1],label='Wasserstein Distance')
             plt.title('Wasserstein Distance')
             plt.legend()

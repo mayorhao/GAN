@@ -15,8 +15,9 @@ sys.path.append("/home/fanjiahao/GAN/GAN")
 from eeggan.examples.conv_lin.model import Generator,Discriminator
 N_STAGE='WAKE'
 MODEL_NAME="conv_linear_4_"+N_STAGE
-SYNTHESIS_SUM=30000
-
+n_batch=64
+SYNTHESIS_SUM=n_batch*400
+fold_idx=0
 model_path='./models/GAN_debug/'+MODEL_NAME+'/Progressive0.gen'
 def fftTransform(data,sampleRate=128.):
     fft = np.fft.rfft(data.numpy(), axis=2)
@@ -56,7 +57,7 @@ def main():
     generator.load_model(os.path.join(model_path))
     generator.model.cur_block=5
     # load_model end
-    batch=1000
+    batch=64
     iter=int(SYNTHESIS_SUM/batch)
     for i in range(iter):
         z_rng=np.random.RandomState(i)
@@ -68,10 +69,10 @@ def main():
         except NameError:
             out=batch_fake[:,:]
     #store
-    fig_path=os.path.join('./analysis_30K',N_STAGE)
+    fig_path=os.path.join('./analysis/5-fold/fold-{}'.format(fold_idx),N_STAGE)
     if not os.path.exists(fig_path):
         os.makedirs(fig_path)
-    filename=os.path.join(fig_path,'synthesis.mat')
+    filename=os.path.join(fig_path,'N1_GAN.mat')
     if not os.path.exists(filename):
         scio.savemat(filename,{
             'x':np.squeeze(out)

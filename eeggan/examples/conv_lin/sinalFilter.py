@@ -20,7 +20,7 @@ def run():
     import matplotlib.pyplot as plt
     import os
     n_stage='REM'
-    raw_signal_path=os.path.join('./analysis',n_stage,'synthesis.mat')
+    raw_signal_path=os.path.join('./analysis',n_stage,'N1_GAN.mat')
     fitered_singal_path=os.path.join('./analysis',n_stage,'synthesis_filtered.mat')
     raw_signals=scio.loadmat(raw_signal_path)['x']
     fs = 128.0
