@@ -36,12 +36,12 @@ torch.backends.cudnn.benchmark=True
 # 读取参数
 parser=argparse.ArgumentParser()
 parser.add_argument("--stage",type=str,default="N1",help="determin which stege to be trained")
-parser.add_argument("--task_id",type=int,default=0,help="the number to generate random seed")
+parser.add_argument("--seed",type=int,default=0,help="the number to generate random seed")
 parser.add_argument("--GPU",type=int,default=2,help="the GPU device id")
 parser.add_argument("--i_block_tmp",type=int,default=0,help="which block to start with?")
 parser.add_argument("--i_epoch_tmp",type=int,default=0,help="which epoch to start with?")
 parser.add_argument("--reuse",type=bool,default=False,help="Do you need to resuse the models")
-parser.add_argument("--fold_idx",type=int,default=4,help="folds number")
+parser.add_argument("--fold_idx",type=int,default=0,help="folds number")
 
 args=parser.parse_args()
 # 读取参数 end
@@ -65,20 +65,20 @@ best_loss=999
 ## 可配置参数
 n_fold=args.fold_idx
 n_stage=args.stage
-task_ind = task_id_map[n_stage]
+# task_ind = task_id_map[n_stage]
 # FIXME original task_ind is 0
-task_ind = args.task_id#subj_ind
+seed = args.seed#subj_ind
 # FIXME allocate specific GPu
 torch.cuda.set_device(args.GPU)
-print("Begin to train stage:{} ,GPU:{},task_id:{},block_tmp:{},epoch_tmp:{},folds:{}".format(n_stage,args.GPU,task_ind,args.i_block_tmp,args.i_epoch_tmp,n_fold))
+print("Begin to train stage:{} ,GPU:{},seed:{},block_tmp:{},epoch_tmp:{},folds:{}".format(n_stage,args.GPU,seed,args.i_block_tmp,args.i_epoch_tmp,n_fold))
 ## 可配置参数 end
 
-## 设置随机种子
-np.random.seed(task_ind)
-torch.manual_seed(task_ind)
-torch.cuda.manual_seed_all(task_ind)
-random.seed(task_ind)
-rng = np.random.RandomState(task_ind)
+## 设置随机种子  according to the fold and stage ,eg ,fold 0_stage_N1  :  fold0: 0 1 2 3  ,fold1:4,5,6,7
+np.random.seed(seed)
+torch.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)
+random.seed(seed)
+rng = np.random.RandomState(seed)
 ## 设置随机种子 end
 
 ## 设置数据路径
@@ -87,7 +87,9 @@ rng = np.random.RandomState(task_ind)
 # data_path='/home/STOREAGE/fanjiahao/GAN/data/stages-c3-128/*.mat'
 #for dell
 if server=='dell':
-    data_path='../../../data/stages-new'
+    data_path='/home/fanjiahao/dataset/evolution/MASS-SS-RAW-absmax-staged'
+else:
+    data_path = '/home/fanjiahao/STORERAGE/dataset/evolution/MASS-SS-RAW-absmax-staged'
 data_list=np.load(os.path.join("./","k-fold-plan","plan.npz"),allow_pickle=True)["plan"]
 data_list=np.array(data_list)
 subject_list=np.delete(data_list,n_fold,0)
@@ -115,7 +117,7 @@ train=np.reshape(train,(train.shape[0],train.shape[1],train.shape[2],1))
 # train = train/np.abs(train).max()
 ## 標準化 end
 
-modelpath = './models/edf-5_fold/k_fold_{}/{}'.format(n_fold,n_stage)
+modelpath = './evolution/models/MASS-5_fold/k_fold_{}/{}'.format(n_fold,n_stage)
 modelname = 'Progressive%s'
 if not os.path.exists(modelpath):
     os.makedirs(modelpath)
