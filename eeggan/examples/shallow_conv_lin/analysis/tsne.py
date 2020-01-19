@@ -12,8 +12,27 @@ from sklearn import manifold, datasets
 from sklearn import datasets
 from sklearn.manifold import TSNE
 import scipy.io as scio
-ROOT_PATH="/home/fanjiahao/matlab-code/feature_extraction/output/SS3"
+TRUE_ROOT_PATH="/home/fanjiahao/matlab-code/feature_extraction/output/SS3"
+FAKE_PATH="/home/fanjiahao/matlab-code/feature_extraction/output/GAN-8-fold-layer/{}_feature.mat"
 #load fold one data
+def get_fake(path):
+    stages=["WAKE","N1","N2","N3","REM"]
+    dataset=[]
+    labels=[]
+    for i ,stage in enumerate(stages):
+        if i==2:
+            continue
+        file_path=path.format(stage)
+        data=scio.loadmat(file_path)
+        x=data['features_final']
+        label=np.ones(len(x),dtype=int)*i
+        dataset.append(x)
+        labels.append(label)
+    dataset=np.vstack(dataset)
+    labels=np.hstack(labels)
+    return dataset,labels
+
+
 def get_data(path):
     file_list = glob.glob(os.path.join(path,"*.mat"))
     dataset = []
@@ -38,7 +57,7 @@ def get_data(path):
     labels = np.asarray(labels)
     for idx, c in enumerate(unique_labels):
         c_list = np.where(labels == c)[0]
-        random_idx = np.random.permutation(c_list)[:1000]
+        random_idx = np.random.permutation(c_list)[:400]
         final_data.extend(dataset[random_idx])
         final_label.extend(labels[random_idx])
     final_data = np.vstack(final_data)
@@ -70,11 +89,11 @@ def get_fake_data():
 #     return data, label, n_samples, n_features
 
 
-def plot_embedding(data, label, title):
+def plot_embedding(data, label, marker,ax):
     x_min, x_max = np.min(data, 0), np.max(data, 0)
     data = (data - x_min) / (x_max - x_min)
     x, y = data[:,0], data[:,1]
-    ax = plt.subplot(111, projection='3d')  # 创建一个三维的绘图工程
+    # ax = plt.subplot(111, projection='3d')  # 创建一个三维的绘图工程
     # ax=plt.subplot(111)
     #  将数据点分成三部分画，在颜色上有区分度
     for idx,sample in enumerate(data):
@@ -82,23 +101,29 @@ def plot_embedding(data, label, title):
         labels=["WAKE","N1","N2","N3","REM"]
         # label = labels[label[idx]]
         if label[idx]!=2:
-            ax.scatter(x[idx],y[idx],c=colors[label[idx]])
+            ax.scatter(x[idx],y[idx],c=colors[label[idx]],marker=marker)
 
     # ax.set_zlabel('Z')  # 坐标轴
     # ax.set_ylabel('Y')s
     # ax.set_xlabel('X')
-    ax.legend()
-    plt.show()
+    # ax.legend()
+    # plt.show()
+
 def main():
-    data, label = get_data(ROOT_PATH)
+    data, label = get_data(TRUE_ROOT_PATH)
+    fake_data,fake_label=get_fake(FAKE_PATH)
+
     print('Computing t-SNE embedding')
-    tsne = TSNE(n_components=2, init='pca', random_state=0)
+    tsne = TSNE(n_components=2, init='pca', random_state=111,perplexity=100)
     t0 = time()
     result = tsne.fit_transform(data)
-    fig = plot_embedding(result, label,
-                         't-SNE embedding of the digits (time %.2fs)'
-                         % (time() - t0))
-    plt.show(fig)
+    # result_f=tsne.fit_transform(fake_data)
+    ax=plt.subplot(111)
+    fig = plot_embedding(result, label,'o',ax)
+    # plot_embedding(result_f, fake_label, 'x',ax)
+    ax.legend()
+    plt.show()
+    # plt.show(fig)
 
 
 if __name__ == '__main__':

@@ -61,7 +61,7 @@ task_id_map={
     "REM":2,
     "WAKE":4
 }
-
+best_loss=999
 ## 可配置参数
 n_fold=args.fold_idx
 n_stage=args.stage
@@ -87,8 +87,8 @@ rng = np.random.RandomState(task_ind)
 # data_path='/home/STOREAGE/fanjiahao/GAN/data/stages-c3-128/*.mat'
 #for dell
 if server=='dell':
-    data_path='/home/fanjiahao/sleep-dataset/staged-sleep-edf'
-data_list=np.load(os.path.join("./","k-fold-plan","plan-edf.npz"),allow_pickle=True)["plan"]
+    data_path='../../../data/stages-new'
+data_list=np.load(os.path.join("./","k-fold-plan","plan.npz"),allow_pickle=True)["plan"]
 data_list=np.array(data_list)
 subject_list=np.delete(data_list,n_fold,0)
 subject_list_temp=[]
@@ -144,11 +144,14 @@ losses_d = []
 losses_g = []
 #fixme load models start
 if args.reuse:
-    print("start load generator model...,from {}".format(os.path.join(modelpath,modelname%jobid+'.gen')))
-    generator.load_model(os.path.join(modelpath,modelname%jobid+'.gen'))
-    print("start load criminator model...,from {}".format(os.path.join(modelpath,modelname%jobid+'.disc')))
-    discriminator.load_model(os.path.join(modelpath,modelname%jobid+'.disc'))
-    i_epoch,loss_d,loss_g=joblib.load(os.path.join(modelpath,modelname%jobid+'_.data'))
+    print("start load generator model...,from {}".format(os.path.join(modelpath, modelname % jobid + '.gen')))
+    generator.load_model(os.path.join(modelpath, modelname % jobid + '.gen'))
+    print("start load criminator model...,from {}".format(os.path.join(modelpath, modelname % jobid + '.disc')))
+    discriminator.load_model(os.path.join(modelpath, modelname % jobid + '.disc'))
+    fade_alpha = i_epoch_tmp * rampup
+    generator.model.alpha = fade_alpha
+    discriminator.model.alpha = fade_alpha
+    i_epoch, loss_d, loss_g = joblib.load(os.path.join(modelpath, modelname % jobid + '_.data'))
 # #fixme load models end
 
 # summary(generator,(1,1,200,1))
@@ -199,6 +202,17 @@ for i_block in range(i_block_tmp,n_blocks):
         losses_d.append(loss_d)
         losses_g.append(loss_g)
 
+        ## In year 2020-1-19,save model strategy
+        if(i_block>=5 and i_epoch>=400):
+            loss_discriminator=loss_d[0]+loss_d[1]+loss_d[2]
+            if(loss_discriminator<best_loss):
+                print("find the model with best loss:{}".format((loss_discriminator)))
+                save_before_time=time.time()
+                print("save best model....")
+                discriminator.save_model(os.path.join(modelpath, 'best_model.disc'))
+                generator.save_model(os.path.join(modelpath, 'best_model' + '.gen'))
+                save_after_time=time.time()
+                print("time used {}".format(save_after_time-save_before_time))
 
         if (i_epoch+1)%100 == 0:
 
