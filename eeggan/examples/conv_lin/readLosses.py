@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 def readSingleLoss():
     i_epoch, losses_d, losses_g = joblib.load(
-        "/home/fanjiahao/GAN/GAN/eeggan/examples/conv_lin/models/k_fold_2/REM/Progressive0_.data")
+        "/home/fanjiahao/GAN/GAN/eeggan/examples/conv_lin/models/k_fold_2/N3/Progressive0_.data")
     # print('Loss_F: %.3f   Loss_R: %.3f   Penalty: %.4f   Loss_G: %.3f ' % (loss_d[0], loss_d[1], loss_d[2], loss_g))
     for i in range(0,len(losses_g)):
         if (i+1)%100==0:
@@ -16,7 +16,7 @@ def readSingleLoss():
     losses_p=np.asarray(losses_d)[::1,2]
     losses_g=np.asarray(losses_g)[::1]
     # plt.figure(figsize=(10, 15))
-    x=np.linspace(0,5500,550)
+    x=np.linspace(0,5500,5500)
     plt.plot(x,losses_r, label='Loss Real')
     plt.plot(x,losses_f, label='Loss Fake')
     plt.plot(x,-losses_r-losses_f,label='wd')
@@ -68,6 +68,6 @@ def readMultiLoss():
 
 
 if __name__ == '__main__':
-    # readSingleLoss()
-    readMultiLoss()
+    readSingleLoss()
+    # readMultiLoss()
 

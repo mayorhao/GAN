@@ -87,10 +87,10 @@ rng = np.random.RandomState(seed)
 # data_path='/home/STOREAGE/fanjiahao/GAN/data/stages-c3-128/*.mat'
 #for dell
 if server=='dell':
-    data_path='/home/fanjiahao/dataset/evolution/MASS-SS-RAW-absmax-staged'
+    data_path='/home/fanjiahao/dataset/evolution/sleep-edf-absmax-staged-interploation'
 else:
-    data_path = '/home/fanjiahao/STORERAGE/dataset/evolution/MASS-SS-RAW-absmax-staged'
-data_list=np.load(os.path.join("./","k-fold-plan","plan.npz"),allow_pickle=True)["plan"]
+    data_path = '/home/fanjiahao/STORERAGE/dataset/sleep-edf-absmax-staged-interploation'
+data_list=np.load(os.path.join("./","k-fold-plan","plan-edf.npz"),allow_pickle=True)["plan"]
 data_list=np.array(data_list)
 subject_list=np.delete(data_list,n_fold,0)
 subject_list_temp=[]
@@ -117,7 +117,7 @@ train=np.reshape(train,(train.shape[0],train.shape[1],train.shape[2],1))
 # train = train/np.abs(train).max()
 ## 標準化 end
 
-modelpath = './evolution/models/MASS-5_fold/k_fold_{}/{}'.format(n_fold,n_stage)
+modelpath = './evolution/models/edf-5_fold/k_fold_{}/{}'.format(n_fold,n_stage)
 modelname = 'Progressive%s'
 if not os.path.exists(modelpath):
     os.makedirs(modelpath)
@@ -211,8 +211,8 @@ for i_block in range(i_block_tmp,n_blocks):
                 print("find the model with best loss:{}".format((loss_discriminator)))
                 save_before_time=time.time()
                 print("save best model....")
-                discriminator.save_model(os.path.join(modelpath, 'best_model.disc'))
-                generator.save_model(os.path.join(modelpath, 'best_model' + '.gen'))
+                discriminator.save_model(os.path.join(modelpath, 'best_model_{}.disc'.format(i_epoch)))
+                generator.save_model(os.path.join(modelpath, 'best_model_{i_epoch}' + '.gen'))
                 save_after_time=time.time()
                 print("time used {}".format(save_after_time-save_before_time))
 

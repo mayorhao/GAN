@@ -28,4 +28,5 @@ task_id_map={
 cd /home/fanjiahao/GAN/GAN/eeggan/examples/conv_lin
 conda activate eeggan 
 touch ./evolution/train_logs/MASS/fold_0/WAKE.log   
- nohup python -u run-new.py --stage=WAKE  --GPU=3 --seed=3 --fold_idx=0  > ./evolution/train_logs/MASS/fold_0/WAKE.log
+ nohup python -u run-new.py --stage=WAKE  --GPU=3 --seed=3 --fold_idx=0  > ./evolution/train_logs/edf/fold_0/WAKE.log 
+ 
