@@ -89,7 +89,7 @@ rng = np.random.RandomState(seed)
 if server=='dell':
     data_path='/home/fanjiahao/dataset/evolution/sleep-edf-absmax-staged-interploation'
 else:
-    data_path = '/home/fanjiahao/STORERAGE/dataset/sleep-edf-absmax-staged-interploation'
+    data_path = '/home/fanjiahao/STORERAGE/dataset/evolution/sleep-edf-absmax-staged-interploation'
 data_list=np.load(os.path.join("./","k-fold-plan","plan-edf.npz"),allow_pickle=True)["plan"]
 data_list=np.array(data_list)
 subject_list=np.delete(data_list,n_fold,0)
@@ -206,13 +206,13 @@ for i_block in range(i_block_tmp,n_blocks):
 
         ## In year 2020-1-19,save model strategy
         if(i_block>=5 and i_epoch>=400):
-            loss_discriminator=loss_d[0]+loss_d[1]+loss_d[2]
+            loss_discriminator=-loss_d[0]-loss_d[1]
             if(loss_discriminator<best_loss):
                 print("find the model with best loss:{}".format((loss_discriminator)))
                 save_before_time=time.time()
                 print("save best model....")
-                discriminator.save_model(os.path.join(modelpath, 'best_model_{}.disc'.format(i_epoch)))
-                generator.save_model(os.path.join(modelpath, 'best_model_{i_epoch}' + '.gen'))
+                # discriminator.save_model(os.path.join(modelpath, 'best_model_{}.disc'.format(i_epoch)))
+                generator.save_model(os.path.join(modelpath, 'best_model_{}' + '.gen').format(i_epoch))
                 save_after_time=time.time()
                 print("time used {}".format(save_after_time-save_before_time))
 

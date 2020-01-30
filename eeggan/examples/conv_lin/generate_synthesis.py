@@ -7,18 +7,29 @@ import glob
 import scipy.io as scio
 import matplotlib.pyplot as plt
 import sys
+import argparse
 # for estar
 # sys.path.append("/home/STOREAGE/fanjiahao/GAN")
 # for dell
-torch.cuda.set_device(3)
+parser=argparse.ArgumentParser()
+parser.add_argument("--stage",type=str,default="N1",help="determin which stege to be trained")
+parser.add_argument("--GPU",type=int,default=3,help="the GPU device id")
+parser.add_argument("--fold_idx",type=int,default=2,help="folds number")
+parser.add_argument("--seed",type=int,default=30,help="random seed")
+parser.add_argument("--best_index",type=int,default=499,help="random seed")
+
+
+args=parser.parse_args()
+# os.environ["CUDA_VISIBLE_DEVICES"]="0"
+torch.cuda.set_device(args.GPU)
 sys.path.append("/home/fanjiahao/GAN/GAN")
 from eeggan.examples.conv_lin.model import Generator,Discriminator
-N_STAGE='WAKE'
-MODEL_NAME="conv_linear_4_"+N_STAGE
 n_batch=64
 SYNTHESIS_SUM=n_batch*400
-fold_idx=0
-model_path='./models/GAN_debug/'+MODEL_NAME+'/Progressive0.gen'
+fold_idx=args.fold_idx
+stage=args.stage
+BEST_INDEX=args.best_index
+model_path='./evolution/models/MASS-5_fold/k_fold_{}/{}/Progressive%s_{}.gen'.format(fold_idx,stage,BEST_INDEX)
 def fftTransform(data,sampleRate=128.):
     fft = np.fft.rfft(data.numpy(), axis=2)
     ams = np.abs(fft).mean(axis=3).mean(axis=0).squeeze()
@@ -49,7 +60,7 @@ def readRealData(n_stage):
     return train
 def main():
     n_z = 200
-    task_ind = 0
+    task_ind = args.seed
     rng = np.random.RandomState(task_ind)
     generator = Generator(1, n_z)
     # load model start
@@ -64,15 +75,16 @@ def main():
         z_vars_im = z_rng.normal(0, 1, size=(batch, n_z)).astype(np.float32)  # see 1000*200
         z_vars = Variable(torch.from_numpy(z_vars_im),requires_grad=False)
         batch_fake = generator(z_vars).data.cpu().numpy()
+        print("{}/{} done".format(i+1,iter))
         try:
             out=np.vstack((out,batch_fake))
         except NameError:
             out=batch_fake[:,:]
     #store
-    fig_path=os.path.join('./analysis/5-fold/fold-{}'.format(fold_idx),N_STAGE)
+    fig_path=os.path.join('./evolution/analysis/5-fold-MASS/fold-{}/'.format(fold_idx))
     if not os.path.exists(fig_path):
         os.makedirs(fig_path)
-    filename=os.path.join(fig_path,'N1_GAN.mat')
+    filename=os.path.join(fig_path,'{}_GAN.mat'.format(stage))
     if not os.path.exists(filename):
         scio.savemat(filename,{
             'x':np.squeeze(out)
