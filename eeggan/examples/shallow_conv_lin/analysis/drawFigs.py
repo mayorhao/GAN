@@ -30,3 +30,4 @@ def truth_vs_fake(truth,fake):
 if __name__ == '__main__':
     # worst_vs_best(file)
     truth_vs_fake(truth,file)
+

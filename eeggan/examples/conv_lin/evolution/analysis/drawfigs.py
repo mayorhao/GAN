@@ -5,10 +5,10 @@ import numpy as np
 import glob
 # from torch.autograd import Variable
 # import
-n_stage="N3"
-fig_path=os.path.join('../analysis',n_stage)
+n_stage="REM"
+fig_path=os.path.join('/home/fanjiahao/GAN/GAN/eeggan/examples/conv_lin/analysis_30K',n_stage)
 # filtered_signal=scio.loadmat(os.path.join('./',n_stage,'synthesis_filtered.mat'))['x']
-raw_signal=scio.loadmat("/home/fanjiahao/GAN/GAN/eeggan/examples/conv_lin/analysis/N3/synthesis.mat")['x']
+raw_signal=scio.loadmat(os.path.join('/home/fanjiahao/GAN/GAN/eeggan/examples/conv_lin/evolution/analysis/5-fold-MASS/fold-0/REM/N1_GAN.mat'))['x']
 plt.figure()
 x = np.linspace(0, 30,3840)
 y = raw_signal[0]
@@ -40,7 +40,7 @@ def readRealData(n_stage):
     # for estar
     # data_path='/home/STOREAGE/fanjiahao/GAN/data/stages-c3-128/*.mat'
     # for dell
-    data_path = '/home/fanjiahao/GAN/extractSleepData/output/stages-c3-128/*.mat'
+    data_path = '/home/fanjiahao/dataset/evolution/MASS-SS-RAW-absmax-staged/*.mat'
     data_list = glob.glob(os.path.join(data_path))
     data_list.sort()
     for i in range(len(data_list)):
@@ -53,7 +53,7 @@ def readRealData(n_stage):
                 data_set = eeg_data_tmp[:, :]
 
     train = np.expand_dims(data_set, axis=1)
-    # train = np.reshape(train, (train.shape[0], train.shape[1], train.shape[2], 1))
+    train = np.reshape(train, (train.shape[0], train.shape[1], train.shape[2], 1))
     # train = train[:,:,:,None]
     train = train - train.mean()
     train = train / train.std()
@@ -76,11 +76,12 @@ freqs_tmp = np.fft.rfftfreq((batch_real.shape[1]), d=1 / 128.)
 plt.plot(freqs_tmp, np.log(fake_fft_ams), label='Fake')
 plt.plot(freqs_tmp, np.log(real_fft_ams), label='Real')
 plt.title('Frequency Spektrum')
-plt.xlabel('Hz')
+plt.xlabel('Frequency(Hz)')
+plt.ylabel('Log Magitude')
 plt.legend()
-# if not os.path.exists(fig_path):
-#     os.makedirs(fig_path)
-# plt.savefig(os.path.join(fig_path, 'fft.png'))
+if not os.path.exists(fig_path):
+    os.makedirs(fig_path)
+plt.savefig(os.path.join(fig_path, 'fft.png'))
 plt.show()
 # plt.close()
 #

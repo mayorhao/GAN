@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 def readSingleLoss():
     i_epoch, losses_d, losses_g = joblib.load(
-        "/home/fanjiahao/GAN/GAN/eeggan/examples/conv_lin/evolution/models/MASS-5_fold/k_fold_2/WAKE/Progressive0_.data")
+        "/home/fanjiahao/GAN/GAN/eeggan/examples/conv_lin/evolution/models/MASS-5_fold/k_fold_4/REM/Progressive0_.data")
     # print('Loss_F: %.3f   Loss_R: %.3f   Penalty: %.4f   Loss_G: %.3f ' % (loss_d[0], loss_d[1], loss_d[2], loss_g))
     for i in range(0,len(losses_g)):
         if (i+1)%100==0:
@@ -19,14 +19,14 @@ def readSingleLoss():
     x=np.linspace(0,5500,5500)
     # plt.plot(x,losses_r, label='Loss Real')
     # plt.plot(x,losses_f, label='Loss Fake')
-    plt.plot((-losses_r-losses_f)[4500:],label='wd')
-    plt.plot((losses_r+losses_f+losses_p)[4500:],label="loss d")
+    plt.plot((-losses_r-losses_f)[-1000:],label='wd')
+    plt.plot((losses_r+losses_f+losses_p)[-1000:],label="loss d")
     # plt.plot(losses_g[4500:],label="loss g")
     plt.title('Losses Discriminator')
     plt.legend()
     # find the model with the least wasserin distance
     w_d=-losses_r-losses_f
-    w_d_5_block=w_d[4500:]
+    w_d_5_block=w_d[-1000:]
     min_wd_sorted=np.argsort(w_d_5_block)
     min_wd_index=min_wd_sorted[np.where(min_wd_sorted>=400)[0][0]]
     print("the min wd is {},index:{}".format(w_d_5_block[min_wd_index],min_wd_index))

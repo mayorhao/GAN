@@ -12,11 +12,11 @@ import argparse
 # sys.path.append("/home/STOREAGE/fanjiahao/GAN")
 # for dell
 parser=argparse.ArgumentParser()
-parser.add_argument("--stage",type=str,default="N1",help="determin which stege to be trained")
+parser.add_argument("--stage",type=str,default="WAKE",help="determin which stege to be trained")
 parser.add_argument("--GPU",type=int,default=3,help="the GPU device id")
-parser.add_argument("--fold_idx",type=int,default=2,help="folds number")
-parser.add_argument("--seed",type=int,default=30,help="random seed")
-parser.add_argument("--best_index",type=int,default=499,help="random seed")
+parser.add_argument("--fold_idx",type=int,default=1,help="folds number")
+parser.add_argument("--seed",type=int,default=3999,help="random seed")
+parser.add_argument("--best_index",type=int,default=474,help="random seed")
 
 
 args=parser.parse_args()
@@ -29,7 +29,7 @@ SYNTHESIS_SUM=n_batch*400
 fold_idx=args.fold_idx
 stage=args.stage
 BEST_INDEX=args.best_index
-model_path='./evolution/models/MASS-5_fold/k_fold_{}/{}/Progressive%s_{}.gen'.format(fold_idx,stage,BEST_INDEX)
+model_path='./evolution/models/MASS-5_fold/k_fold_{}/{}/best_model_{}.gen'.format(fold_idx,stage,BEST_INDEX)
 def fftTransform(data,sampleRate=128.):
     fft = np.fft.rfft(data.numpy(), axis=2)
     ams = np.abs(fft).mean(axis=3).mean(axis=0).squeeze()

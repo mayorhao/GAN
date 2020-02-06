@@ -106,4 +106,8 @@ log.out
 models/
 ../stages-new/
 stages-new/
-evolution/
+evolution/ststatus
+ eeggan/examples/conv_lin/evolution/analysis/5-fold-MASS/
+eeggan/examples/conv_lin/evolution/analysis_30K/
+eeggan/examples/conv_lin/evolution/train_logs/
+eeggan/examples/conv_lin/evolution/analysis/5-fold-MASS/
